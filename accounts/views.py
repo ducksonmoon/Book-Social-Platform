@@ -19,7 +19,7 @@ from utils.functions import report
 
 
 class ProfileView(generics.RetrieveAPIView):
-    # serializer_class = ProfileSerializer
+    serializer_class = ProfileSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
 
@@ -37,7 +37,7 @@ class ProfileView(generics.RetrieveAPIView):
 
         profile = self.get_object(username)
         if profile:
-            serializer = ProfileSerializer(profile, context={'request': self.request})
+            serializer = self.serializer_class(profile, context={'request': self.request})
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
