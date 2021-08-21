@@ -21,6 +21,20 @@ class UserProfile(models.Model):
 
     # readed_books = models.ManyToManyField('Book', related_name='readed_books', blank=True) 
 
+    def follow(self, user):
+        if user not in self.following.all() and user.user != self.user:
+            self.following.add(user.user)
+            user.followers.add(self.user)
+            return True
+        return False
+    
+    def unfollow(self, user):
+        if user.user in self.following.all() and user.user != self.user:
+            self.following.remove(user.user)
+            user.followers.remove(self.user)
+            return True
+        return False
+    
     def save(self, *args, **kwargs):
         super(UserProfile, self).save(*args, **kwargs)
         # Resize the image to a square

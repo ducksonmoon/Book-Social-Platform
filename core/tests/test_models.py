@@ -61,3 +61,81 @@ class TestModels(TestCase):
             name='Babr Ali',
         )
         self.assertEqual(user_profile.following.count(), 0)
+
+    def test_user_profile_follow(self):
+        new_user = User.objects.create_user(
+            username='testuser2', password='12345')
+
+        user_profile1 = UserProfile.objects.create(
+            user=self.user,
+            name='Abbas Ali',
+        )
+        user_profile2 = UserProfile.objects.create(
+            user=new_user,
+            name='Babr Ali',
+        )
+
+        user_profile1.follow(user_profile2)
+        self.assertEqual(user_profile1.following.count(), 1)
+        self.assertEqual(user_profile1.following.first().userprofile, user_profile2)
+        self.assertEqual(user_profile2.followers.count(), 1)
+        self.assertEqual(user_profile2.followers.first().userprofile, user_profile1)
+    
+    def test_user_profile_unfollow(self):
+        new_user = User.objects.create_user(
+            username='testuser2', password='12345')
+        
+        user_profile1 = UserProfile.objects.create(
+            user=self.user,
+            name='Abbas Ali',
+        )
+        user_profile2 = UserProfile.objects.create(
+            user=new_user,
+            name='Babr Ali',
+        )
+
+        user_profile1.follow(user_profile2)
+        user_profile1.unfollow(user_profile2)
+        user_profile1.following.remove(user_profile2.user)
+
+        self.assertEqual(user_profile1.following.count(), 0)
+        self.assertEqual(user_profile2.followers.count(), 0)
+
+    def test_user_profile_follow_my_user(self):
+        user_profile = UserProfile.objects.create(
+            user=self.user,
+            name='Babr Ali',
+        )
+        user_profile.follow(user_profile)
+        self.assertEqual(user_profile.following.count(), 0)
+        self.assertEqual(user_profile.followers.count(), 0)
+
+    def test_user_profile_follow_unfollow_my_user(self):
+        user_profile = UserProfile.objects.create(
+            user=self.user,
+            name='Babr Ali',
+        )
+        user_profile.follow(user_profile)
+        user_profile.unfollow(user_profile)
+        self.assertEqual(user_profile.following.count(), 0)
+        self.assertEqual(user_profile.followers.count(), 0)
+    
+    def test_user_profile_follow__twice(self):
+        new_user = User.objects.create_user(
+            username='testuser2', password='12345')
+        
+        user_profile1 = UserProfile.objects.create(
+            user=self.user,
+            name='Abbas Ali',
+        )
+        user_profile2 = UserProfile.objects.create(
+            user=new_user,
+            name='Babr Ali',
+        )
+
+        user_profile1.follow(user_profile2)
+        user_profile1.follow(user_profile2)
+        self.assertEqual(user_profile1.following.count(), 1)
+        self.assertEqual(user_profile1.following.first().userprofile, user_profile2)
+        self.assertEqual(user_profile2.followers.count(), 1)
+        self.assertEqual(user_profile2.followers.first().userprofile, user_profile1)
