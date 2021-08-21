@@ -1,3 +1,4 @@
+from core.models import UserProfile
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -18,6 +19,19 @@ class PublicUserApiTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
+
+    def test_create_user_successful(self):
+        """Test creating a new user"""
+        payload = {
+            'name': 'Abbas Masomi',
+            'username': 'test1213',
+            'email': 'test@tests.com',
+            'password': 'ops11Paq2'
+        }
+        res = self.client.post(CREATE_USER_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        userprofile = UserProfile.objects.get(user__username='test1213')
+        self.assertEqual(userprofile.name, payload['name'])
 
     def test_create_token_for_user(self):
         """ Test that a token is created for the user. """
