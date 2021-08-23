@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -15,6 +16,18 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'username', 'email', 'password',)
         read_only_fields = ('id',)
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}, }
+
+
+    # Custom validation for the username field
+    def validate_username(self, value):
+        """
+        Check if the username is valid and unique
+        :param value:
+        :return:
+        """
+        if not validate_username(value):
+            raise ValidationError('Username is invalid')
+        return value
 
     def create(self, validated_data):
         """Create a new user with encrypted password and return it"""
@@ -75,14 +88,22 @@ class ManageUserSerializer(serializers.ModelSerializer):
         """Validate user data"""
         # Validate username
         user = data.get('user')
-        username = user.get('username')
-        if not validate_username(username):
-            raise ValidationError('Username is invalid.')
+        if user:
+            username = user.get('username')
+            if not validate_username(username):
+                raise ValidationError('Username is invalid.')
+            if User.objects.filter(username=username).exclude(pk=user.get('id')).exists() and\
+                    not self.instance.user.username == username:
+                raise ValidationError('Username is already taken.')
 
-        # Validate email
-        email = user.get('email')
-        if not validate_email(email):
-            raise ValidationError('Email is invalid.')
+            # Validate email
+            email = user.get('email')
+            if not validate_email(email):
+                raise ValidationError('Email is invalid.')
+            if User.objects.filter(email=email).exclude(pk=user.get('id')).exists() and\
+                    not self.instance.user.email == email:
+                raise ValidationError('Email is already taken.')
+
 
         # Validate avatar file
         avatar = data.get('avatar')
@@ -108,4 +129,17 @@ class ManageUserSerializer(serializers.ModelSerializer):
 
         return instance
 
+
+class ChangePasswordSerializer(serializers.Serializer):
     
+    model = User
+
+    """
+    Serializer for password change endpoint.
+    """
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value

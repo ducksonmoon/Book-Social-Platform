@@ -7,7 +7,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     birth_date = models.DateField(null=True, blank=True)
-    avatar = models.ImageField(upload_to='media/avatars/', blank=True, default='media/defaults/avatar.png')
+    avatar = models.ImageField(upload_to='avatars/', blank=True, default='defaults/avatar.png')
     SOCIAL_MEDIA_CHOICES = (
         ('facebook', 'Facebook'),
         ('twitter', 'Twitter'),
