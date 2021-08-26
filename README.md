@@ -40,9 +40,13 @@ This handy guide will help you run projects and read documents:
 
 ## Help
 
-You can find Documantions Here:
+You can find Documentations here:
 `````
 localhost:port/swagger/
 `````
 > example:
 > `` http://127.0.0.1:8000/swagger/ ``
+
+## TODO:
+1. User [  ]
+2. Book [  ] 
