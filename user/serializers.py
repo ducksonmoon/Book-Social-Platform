@@ -1,9 +1,11 @@
 from django.contrib.auth import authenticate
+from django.core.mail import send_mail
+from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from core.models import UserProfile
+from core.models import UserProfile, ConfirmCode
 from utils.validators import validate_username, validate_email, validate_image_extension
 
 
@@ -29,12 +31,33 @@ class UserSerializer(serializers.ModelSerializer):
             raise ValidationError('Username is invalid')
         return value
 
+    def validate_email(self, value):
+        """
+        Check if the email is valid and unique
+        :param value:
+        :return:
+        """
+        if not validate_email(value):
+            raise ValidationError('Email is invalid.')
+        elif User.objects.filter(email=value).exists():
+            raise ValidationError('Email already exists.')
+        return value
+
     def create(self, validated_data):
         """Create a new user with encrypted password and return it"""
         data = validated_data.pop('userprofile', None)
         user = User.objects.create_user(**validated_data)
         if data:
             UserProfile.objects.create(user=user, name=data['name'])
+            code = ConfirmCode.objects.create(user=user)
+            send_mail(
+                'Nebig - Confirm Code', 
+                'Your confirm code is \n\n' + code.code, 
+                settings.EMAIL_HOST_USER, 
+                [user.email], 
+                fail_silently=False
+            )
+
         return user
 
     def update(self, instance, validated_data):
@@ -131,7 +154,6 @@ class ManageUserSerializer(serializers.ModelSerializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
-    
     model = User
 
     """
@@ -143,3 +165,30 @@ class ChangePasswordSerializer(serializers.Serializer):
     def validate_new_password(self, value):
         validate_password(value)
         return value
+
+
+class ConfirmCodeSerializer(serializers.ModelSerializer):
+    """Serializer for confirm code"""
+    class Meta:
+        model = ConfirmCode
+        fields = ('id', 'code', 'user', 'created_at', 'expire_at')
+        read_only_fields = ('id', 'created_at', 'expire_at')
+    
+    def validate_code(self, value):
+        """Validate code"""
+        if not ConfirmCode.objects.filter(code=value).exists():
+            raise ValidationError('Invalid code.')
+        return value
+    
+    def validate_user(self, value):
+        """Validate user"""
+        if not User.objects.filter(pk=value).exists():
+            raise ValidationError('Invalid user.')
+        return value
+
+    def create(self, validated_data):
+        """Create confirm code"""
+        user = validated_data.get('user')
+        if ConfirmCode.objects.filter(user=user).exists():
+            raise ValidationError('Already confirmed.')
+        return ConfirmCode.objects.create(**validated_data)

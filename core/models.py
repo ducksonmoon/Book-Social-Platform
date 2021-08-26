@@ -1,6 +1,11 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 
+import random
+import string
+from django.utils import timezone
 from PIL import Image
 
 class UserProfile(models.Model):
@@ -9,9 +14,9 @@ class UserProfile(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, default='defaults/avatar.png')
     SOCIAL_MEDIA_CHOICES = (
-        ('facebook', 'Facebook'),
-        ('twitter', 'Twitter'),
-        ('linkedin', 'Linkedin'),
+        ('facebook', 'Facebook'), # TODO: Delete Facbook and LinkedIn 
+        ('twitter', 'Twitter'),   # from social media choices
+        ('linkedin', 'Linkedin'), # only Twitter Account.
     )
     social_media_username = models.CharField(max_length=255, blank=True, choices=SOCIAL_MEDIA_CHOICES)
     social_media_link = models.URLField(blank=True)
@@ -47,3 +52,31 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+class ConfirmCode(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    code = models.CharField(
+        max_length=255, 
+        unique=True,
+        default=''.join(random.choice(string.digits) for _ in range(6))
+    )
+    
+    expires = models.DateTimeField(default=timezone.now() + timezone.timedelta(minutes=10))
+
+    def __str__(self):
+        return self.user.username
+
+    def check_confirm_code(self, code):
+        if self.code == code and self.expires > timezone.now():
+            return True
+        return False
+
+    def send_confirm_code_to_email(self):
+        send_mail(
+            'Confirm Code', 
+            'Your confirm code is ' + self.code, 
+            settings.EMAIL_HOST_USER, 
+            [self.user.email], 
+            fail_silently=False
+        )

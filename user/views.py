@@ -6,7 +6,9 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from django.contrib.auth.models import User
 
 from core.models import UserProfile
-from user.serializers import AuthTokenSerializer, UserSerializer, ManageUserSerializer, ChangePasswordSerializer
+from user.serializers import (
+    AuthTokenSerializer, UserSerializer, ManageUserSerializer, ChangePasswordSerializer, ConfirmCodeSerializer
+)
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -69,3 +71,30 @@ class ChangePasswordView(generics.UpdateAPIView):
                 return Response(response)
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ConfirmCodeView(generics.CreateAPIView):
+    """
+    An endpoint for confirming email.
+    """
+    serializer_class = ConfirmCodeSerializer
+    authentication_classes = (authentication.TokenAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
+    model = User
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.object = self.get_object()
+            if self.object.check_confirm_code(serializer.data.get("code")):
+                self.object.is_active = True
+                self.object.save()
+                return Response({'status': 'success', 'code': status.HTTP_200_OK, 'message': 'Email confirmed successfully.'})
+            else:
+                return Response({'status': 'fail', 'code': status.HTTP_400_BAD_REQUEST, 'message': 'Invalid code.'})
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
