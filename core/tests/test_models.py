@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.core.files import File
 
 from core.models import *
 
@@ -27,17 +28,23 @@ class TestModels(TestCase):
             user=self.user,
             name='Babr Ali',
         )
-        defu_avatar = 'media/defaults/avatar.png'
-        self.assertEqual(user_profile.avatar, defu_avatar)
+        defu_avatar = 'defaults/avatar.png'
+        self.assertEqual(user_profile.avatar.name, defu_avatar)
 
     def test_user_profile_model_avatar_upload(self):
         user_profile = UserProfile.objects.create(
             user=self.user,
             name='Babr Ali',
         )
-        user_profile.avatar = 'media/avatars/sg.png'
+        import os
+        path = 'avatars/SG.png'
+        add = os.path.join(settings.MEDIA_ROOT, path)
+        user_profile.avatar = add
         user_profile.save()
-        self.assertEqual(user_profile.avatar, 'media/avatars/sg.png')
+        user_profile.refresh_from_db()
+        # check if avatar is changed
+        self.assertNotEqual(user_profile.avatar.name, 'avatar.png')
+        self.assertEqual(user_profile.avatar.name, add)
     
     def test_user_profile_model_social_media(self):
         user_profile = UserProfile.objects.create(
