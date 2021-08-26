@@ -47,6 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
         """Create a new user with encrypted password and return it"""
         data = validated_data.pop('userprofile', None)
         user = User.objects.create_user(**validated_data)
+        user.is_active = False
         if data:
             UserProfile.objects.create(user=user, name=data['name'])
             code = ConfirmCode.objects.create(user=user)
@@ -167,28 +168,31 @@ class ChangePasswordSerializer(serializers.Serializer):
         return value
 
 
-class ConfirmCodeSerializer(serializers.ModelSerializer):
+class ConfirmCodeSerializer(serializers.Serializer):
     """Serializer for confirm code"""
-    class Meta:
-        model = ConfirmCode
-        fields = ('id', 'code', 'user', 'created_at', 'expire_at')
-        read_only_fields = ('id', 'created_at', 'expire_at')
+
+    email = serializers.EmailField(required=True)
+    code = serializers.CharField(max_length=6)
     
-    def validate_code(self, value):
-        """Validate code"""
-        if not ConfirmCode.objects.filter(code=value).exists():
-            raise ValidationError('Invalid code.')
-        return value
-    
-    def validate_user(self, value):
-        """Validate user"""
-        if not User.objects.filter(pk=value).exists():
-            raise ValidationError('Invalid user.')
-        return value
+    def validate_email(self, value):
+        """Validate email"""
+        if not User.objects.filter(email=value).exists():
+            raise ValidationError('Invalid email.')
+        return value        
 
     def create(self, validated_data):
-        """Create confirm code"""
-        user = validated_data.get('user')
-        if ConfirmCode.objects.filter(user=user).exists():
-            raise ValidationError('Already confirmed.')
-        return ConfirmCode.objects.create(**validated_data)
+        """Create a new confirm code"""
+        user = User.objects.get(email=validated_data.get('email'))
+        try:
+            ConfirmCode.objects.get(user=user).delete()
+        except ConfirmCode.DoesNotExist:
+            code = ConfirmCode.objects.create(user=user)
+            send_mail(
+                'Nebig - Confirm Code', 
+                'Your confirm code is \n\n' + code.code, 
+                settings.EMAIL_HOST_USER, 
+                [user.email], 
+                fail_silently=False
+            )
+        return code
+

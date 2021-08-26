@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.contrib.auth.models import User
 
-from core.models import UserProfile
+from core.models import UserProfile, ConfirmCode
 from user.serializers import (
     AuthTokenSerializer, UserSerializer, ManageUserSerializer, ChangePasswordSerializer, ConfirmCodeSerializer
 )
@@ -73,28 +73,51 @@ class ChangePasswordView(generics.UpdateAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ConfirmCodeView(generics.CreateAPIView):
+class SendConfirmCodeView(generics.GenericAPIView):
+    """Send a confirm code to the user's email with no content."""
+
+    authentication_classes = (authentication.TokenAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_object(self):
+        """Retrieve and return authentication user"""
+        return self.request.user
+
+    def create(self, request, *args, **kwargs):
+        """Create a new confirm code"""
+        user = self.get_object()
+        try:
+            ConfirmCode.objects.get(user=user).delete()
+            code = ConfirmCode.objects.create(user=user)
+
+        except ConfirmCode.DoesNotExist:
+            code = ConfirmCode.objects.create(user=user)
+        code.send_confirm_code_to_email()
+        return Response({"status": "success", "code": status.HTTP_200_OK, "message": "Confirm code sent."},
+                        status=status.HTTP_200_OK)
+
+
+class VerifyEmailView(generics.GenericAPIView):
     """
-    An endpoint for confirming email.
+    An endpoint for verifying email.
     """
     serializer_class = ConfirmCodeSerializer
     authentication_classes = (authentication.TokenAuthentication, SessionAuthentication, BasicAuthentication)
     permission_classes = (permissions.IsAuthenticated,)
-    model = User
 
     def get_object(self, queryset=None):
-        obj = self.request.user
+        obj = ConfirmCode.objects.get(code=self.kwargs['code'])
         return obj
 
-    def create(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            self.object = self.get_object()
-            if self.object.check_confirm_code(serializer.data.get("code")):
-                self.object.is_active = True
-                self.object.save()
-                return Response({'status': 'success', 'code': status.HTTP_200_OK, 'message': 'Email confirmed successfully.'})
-            else:
-                return Response({'status': 'fail', 'code': status.HTTP_400_BAD_REQUEST, 'message': 'Invalid code.'})
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        self.kwargs['code'] = serializer.validated_data['code']
+        self.kwargs['email'] = serializer.validated_data['email']
+        user = User.objects.get(email=self.kwargs['email'])
+        if user.confirmcode.code == self.kwargs['code']:
+            user.is_active = True
+            user.save()
+            return Response({'status': 'success', 'code': status.HTTP_200_OK, 'message': 'Email verified successfully.'})
+        else:
+            return Response({'status': 'fail', 'code': status.HTTP_400_BAD_REQUEST, 'message': 'Invalid code.'})
