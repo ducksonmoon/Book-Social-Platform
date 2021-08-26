@@ -33,6 +33,9 @@ This handy guide will help you run projects and read documents:
 ````````
 > ./manage.py runserver
 ````````
+> Django runs its server on port `8000` by default. 
+> You can run server on specific ports if you add port number after runserver command<br>
+> example on port 9000: ``` ./manage.py runserver 9000 ``` <br>
 
 
 ## Help
