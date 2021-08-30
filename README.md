@@ -49,5 +49,3 @@ localhost:port/swagger/
 > `` http://127.0.0.1:8000/swagger/ ``
 
 ## TODO
-1. User [  ]
-2. Book [  ] 
