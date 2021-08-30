@@ -14,9 +14,7 @@ class UserProfile(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, default='defaults/avatar.png')
     SOCIAL_MEDIA_CHOICES = (
-        ('facebook', 'Facebook'), # TODO: Delete Facbook and LinkedIn 
-        ('twitter', 'Twitter'),   # from social media choices
-        ('linkedin', 'Linkedin'), # only Twitter Account.
+        ('twitter', 'Twitter'),   # There was 3 options but for but we only use one.
     )
     social_media_username = models.CharField(max_length=255, blank=True, choices=SOCIAL_MEDIA_CHOICES)
     social_media_link = models.URLField(blank=True)
