@@ -78,3 +78,38 @@ class ConfirmCode(models.Model):
             [self.user.email], 
             fail_silently=False
         )
+
+
+class Invitation(models.Model):
+    sender = models.ForeignKey(User, related_name='invitations_sent', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='invitations_received', on_delete=models.CASCADE)
+    code = models.CharField(
+        max_length=255, 
+        unique=True,
+        default=''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+    )
+    date_created = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.sender.username + ' -> ' + self.receiver.username
+
+    def save(self, *args, **kwargs):
+        # if code wasn't unique change it
+        if Invitation.objects.filter(code=self.code).exists():
+            self.code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+        super(Invitation, self).save(*args, **kwargs)
+
+    def check_invitation(self, code):
+        if self.code == code and self.is_active:
+            return True
+        return False
+
+    def send_invitation_to_email(self):
+        send_mail(
+            'Invitation', 
+            'Your invitation code is ' + self.code, 
+            settings.EMAIL_HOST_USER, 
+            [self.receiver.email], 
+            fail_silently=False
+        )

@@ -146,3 +146,41 @@ class TestModels(TestCase):
         self.assertEqual(user_profile1.following.first().userprofile, user_profile2)
         self.assertEqual(user_profile2.followers.count(), 1)
         self.assertEqual(user_profile2.followers.first().userprofile, user_profile1)
+
+    def test_invitation_model(self):
+
+        receiver = User.objects.create_user(
+            username='testuser2', password='12345')
+
+        invitation = Invitation.objects.create(
+            sender=self.user,
+            receiver=receiver,
+        )
+        self.assertEqual(invitation.sender, self.user)
+        self.assertEqual(invitation.receiver.username, 'testuser2')
+    
+    def test_invitation_model_send(self):
+        receiver = User.objects.create_user(
+            username='testuser2', password='12345')
+        invitation = Invitation.objects.create(
+            sender=self.user,
+            receiver=receiver,
+        )
+        code = invitation.code
+        wrong_code = '12F3A5'
+        self.assertEqual(code, invitation.code)
+        self.assertNotEqual(code, wrong_code)
+        self.assertCountEqual(Invitation.objects.filter(code=code), [invitation])
+
+    def test_different_invitation_code(self):
+        receiver = User.objects.create_user(
+            username='testuser2', password='12345')
+        invitation1 = Invitation.objects.create(
+            sender=self.user,
+            receiver=receiver,
+        )
+        invitation2 = Invitation.objects.create(
+            sender=self.user,
+            receiver=receiver,
+        )
+        self.assertNotEqual(invitation1.code, invitation2.code)

@@ -50,7 +50,9 @@ class UserSerializer(serializers.ModelSerializer):
         user.is_active = False
         if data:
             UserProfile.objects.create(user=user, name=data['name'])
-            code = ConfirmCode.objects.create(user=user)
+            # Changed our strategy to send an email to the user with a code to confirm their account.
+            ''' 
+            code = ConfirmCode.objects.create(user=user) 
             send_mail(
                 'Nebig - Confirm Code', 
                 'Your confirm code is \n\n' + code.code, 
@@ -58,7 +60,7 @@ class UserSerializer(serializers.ModelSerializer):
                 [user.email], 
                 fail_silently=False
             )
-
+            '''
         return user
 
     def update(self, instance, validated_data):
@@ -106,7 +108,7 @@ class ManageUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('id', 'name', 'username', 'email', 'birth_date', 'avatar', 'social_media_username')
+        fields = ('id', 'name', 'username', 'email', 'birth_date', 'avatar', 'social_media_link')
 
     def validate(self, data):
         """Validate user data"""
@@ -143,7 +145,7 @@ class ManageUserSerializer(serializers.ModelSerializer):
         user_data = validated_data.pop('user', None)
         instance.name = validated_data.get('name', instance.name)
         instance.avatar = validated_data.get('avatar', instance.avatar)
-        instance.social_media_username = validated_data.get('social_media_username', instance.social_media_username)
+        instance.social_media_link = validated_data.get('social_media_link', instance.social_media_link)
         instance.birth_date = validated_data.get('birth_date', instance.birth_date)
         if user_data:
             instance.user.username = user_data.get('username', instance.user.username)
