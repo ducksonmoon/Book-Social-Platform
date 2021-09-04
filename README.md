@@ -16,6 +16,7 @@ This handy guide will help you run projects and read documents:
 > Ensure Python3 and Pip are correctly installed and functioning before proceeding to step 2.
 > <br>
 > Install virtualenv by running ``` pip3 install virtualenv ```
+> <br>
 > Install virtualenv by running [windows] ``` pip install virtualenv ```
 
 2. Create virtualend and install requirements.
