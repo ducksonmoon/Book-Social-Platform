@@ -6,14 +6,15 @@ from django.conf import settings
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from core.models import UserProfile
+from core.models import UserProfile, Invitation
 
 
 CREATE_USER_URL = reverse('user:create')
 TOKEN_URL = reverse('user:token')
 ME_URL = reverse('user:me')
 CHANGE_PASSWORD_URL = reverse('user:change_password')
-
+MY_INVITATIONS = reverse('user:my_invitations')
+INVITATION_CODE_ENTER = reverse('user:invitation_code_enter')
 
 def create_user(**params):
     return User.objects.create_superuser(**params)
@@ -187,3 +188,51 @@ class PrivateUserApiTests(TestCase):
         file = pre + path
         # Check that the file was uploaded
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_not_invited_user(self):
+        """"Test NOT invited use"""
+
+        res = self.client.get(MY_INVITATIONS)
+        self.assertEqual(res.data['message'], 'You have no invitations.')  
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.user.userprofile.is_invited, False)
+    
+    def test_wrong_code_invited_user(self):
+        """Test invited user with wrong code."""
+        res = self.client.post(INVITATION_CODE_ENTER, {'code': '12345'})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(self.user.userprofile.is_invited, False)
+
+    def test_invitation_code(self):
+        """Test inviation code."""
+        user_sender = User.objects.create(
+            username='sender_test1213',
+            email='sender_test@test2.com',
+            password='testpass1234',
+        )
+        
+        code = Invitation.objects.create(sender=user_sender)
+        res = self.client.post(INVITATION_CODE_ENTER, {'code': code.code})
+        code.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(code.is_active, False)
+        self.assertEqual(code.receiver, self.user)
+        self.assertEqual(code.sender, user_sender)
+        self.assertEqual(self.user.userprofile.is_invited, True)
+    
+    def test_my_invitations_user(self):
+        """Users 3 given invitations code."""
+        user_sender = User.objects.create(
+            username='sender_test1213',
+            email='sender_test@test2.com',
+            password='testpass1234',
+        )
+        code = Invitation.objects.create(sender=user_sender)
+        res = self.client.post(INVITATION_CODE_ENTER, {'code': code.code})
+        code.refresh_from_db()
+
+        res = self.client.get(MY_INVITATIONS)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data['invitations']), 3)
+        for _ in res.data['invitations']:
+            self.assertEqual(_['is_active'], True)

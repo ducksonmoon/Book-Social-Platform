@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from core.models import UserProfile, ConfirmCode
+from core.models import UserProfile, ConfirmCode, Invitation
 from utils.validators import validate_username, validate_email, validate_image_extension
 
 
@@ -44,12 +44,11 @@ class UserSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        """Create a new user with encrypted password and return it"""
+        """Create a new user with encrypted password and return it. """
         data = validated_data.pop('userprofile', None)
         user = User.objects.create_user(**validated_data)
-        user.is_active = False
         if data:
-            UserProfile.objects.create(user=user, name=data['name'])
+            userprofile = UserProfile.objects.create(user=user, name=data['name'])
             # Changed our strategy to send an email to the user with a code to confirm their account.
             ''' 
             code = ConfirmCode.objects.create(user=user) 
@@ -198,3 +197,15 @@ class ConfirmCodeSerializer(serializers.Serializer):
             )
         return code
 
+
+class InvitationSerializer(serializers.ModelSerializer):
+    """Serializer for invitation"""
+
+    class Meta:
+        model = Invitation
+        fields = ('sender', 'receiver', 'code', 'date_created', 'is_active')
+        read_only_fields = ('sender', 'receiver', 'code', 'date_created', 'is_active')
+
+
+class InvitationCodeSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=6)

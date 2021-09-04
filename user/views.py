@@ -5,9 +5,11 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.contrib.auth.models import User
 
-from core.models import UserProfile, ConfirmCode
+from core.models import Invitation, UserProfile, ConfirmCode
 from user.serializers import (
-    AuthTokenSerializer, UserSerializer, ManageUserSerializer, ChangePasswordSerializer, ConfirmCodeSerializer
+    AuthTokenSerializer, UserSerializer, ManageUserSerializer, 
+    ChangePasswordSerializer, ConfirmCodeSerializer, InvitationSerializer,
+    InvitationCodeSerializer
 )
 
 
@@ -121,3 +123,72 @@ class VerifyEmailView(generics.GenericAPIView):
             return Response({'status': 'success', 'code': status.HTTP_200_OK, 'message': 'Email verified successfully.'})
         else:
             return Response({'status': 'fail', 'code': status.HTTP_400_BAD_REQUEST, 'message': 'Invalid code.'})
+
+
+class InvitationView(generics.ListAPIView):
+    """
+    An endpoint for retrieving invitations of authenticated user.
+    """
+    serializer_class = InvitationSerializer
+    authentication_classes = (authentication.TokenAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        """
+        Return invitations of authenticated user.
+        """
+        qs = Invitation.objects.filter(
+            is_active=True,
+            sender=self.request.user
+        )
+        return qs
+
+    def get(self, request, *args, **kwargs):
+        """
+        Return invitations of authenticated user.
+        """
+        qs = self.get_queryset()
+        # If there's no invitations, Response You have no invitations.
+        if len(qs) == 0:
+            return Response({'status': 'success', 'code': status.HTTP_200_OK, 'message': 'You have no invitations.'})
+
+        serializer = self.get_serializer(qs, many=True)
+        return Response({'status': 'success', 'code': status.HTTP_200_OK, 'message': 'Invitations retrieved successfully.',
+                         'invitations': serializer.data}, status=status.HTTP_200_OK)
+
+
+# Enter invitation code to activate account
+class InvitationCodeView(generics.GenericAPIView):
+    """
+    An endpoint for retrieving invitation code.
+    """
+    serializer_class = InvitationCodeSerializer
+    authentication_classes = (authentication.TokenAuthentication, SessionAuthentication, BasicAuthentication)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Activate account with invitation code.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        code = serializer.validated_data['code']
+        try:
+            invitation = Invitation.objects.get(code=code)
+        except Invitation.DoesNotExist:
+            return Response({'status': 'fail', 'code': status.HTTP_400_BAD_REQUEST, 'message': 'Invitation code does not exist.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if not invitation.is_active:
+            return Response({'status': 'fail', 'code': status.HTTP_400_BAD_REQUEST, 'message': 'Invitation code has already been used.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        invitation.is_active = False
+        invitation.receiver = request.user
+        request.user.userprofile.is_invited = True
+        invitation.save()
+
+        # Create 3 invitation codes for user.
+        for _ in range(3):
+            Invitation.objects.create(sender=request.user)
+
+        return Response({'status': 'success', 'code': status.HTTP_200_OK, 'message': 'Invitation code activated successfully.'},
+                        status=status.HTTP_200_OK)
