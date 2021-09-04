@@ -8,6 +8,7 @@ import string
 from django.utils import timezone
 from PIL import Image
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
@@ -18,7 +19,8 @@ class UserProfile(models.Model):
     )
     social_media_username = models.CharField(max_length=255, blank=True, choices=SOCIAL_MEDIA_CHOICES)
     social_media_link = models.URLField(blank=True)
-
+    # User is invited: boolean -> True or False
+    is_invited = models.BooleanField(default=False)
     followers = models.ManyToManyField(User, related_name='followers', blank=True)
     following = models.ManyToManyField(User, related_name='following', blank=True)
 
@@ -82,7 +84,7 @@ class ConfirmCode(models.Model):
 
 class Invitation(models.Model):
     sender = models.ForeignKey(User, related_name='invitations_sent', on_delete=models.CASCADE)
-    receiver = models.ForeignKey(User, related_name='invitations_received', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='invitations_received', on_delete=models.CASCADE, null=True)
     code = models.CharField(
         max_length=255, 
         unique=True,
@@ -92,7 +94,10 @@ class Invitation(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.sender.username + ' -> ' + self.receiver.username
+        if self.receiver:
+            return self.sender.username + ' invited ' + self.receiver.username
+        else:
+            return self.sender.username + ' invited ' + '----'
 
     def save(self, *args, **kwargs):
         # if code wasn't unique change it
