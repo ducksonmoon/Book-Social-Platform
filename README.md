@@ -16,6 +16,8 @@ This handy guide will help you run projects and read documents:
 > Ensure Python3 and Pip are correctly installed and functioning before proceeding to step 2.
 > <br>
 > Install virtualenv by running ``` pip3 install virtualenv ```
+> <br>
+> Install virtualenv by running [windows] ``` pip install virtualenv ```
 
 2. Create virtualend and install requirements.
 `````````
@@ -24,16 +26,38 @@ This handy guide will help you run projects and read documents:
 > pip install -r requirements.txt
 `````````
 
+2. Create virtualend and install requirements. [windows]
+`````````
+> virtualenv venv
+> venv/Scripts/activate.bat
+> pip install django
+> pip install djangorestframework
+> pip install -U drf-yasg
+> pip install Pillow
+`````````
+
 3. Make migrations and create database.
 `````````
 > ./manage.py makemigrations
 > ./mange.py migrate
 `````````
 
+3. Make migrations and create database. [windows]
+`````````
+> python manage.py makemigrations
+> python mange.py migrate
+`````````
+
 4. Run server.
 ````````
 > ./manage.py runserver
 ````````
+
+4. Run server. [windows]
+````````
+> python manage.py runserver
+````````
+
 > Django runs its server on port `8000` by default. 
 > You can run server on specific ports if you add port number after runserver command<br>
 > example on port 9000: ``` ./manage.py runserver 9000 ``` <br>
