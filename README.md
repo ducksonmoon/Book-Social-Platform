@@ -34,6 +34,7 @@ This handy guide will help you run projects and read documents:
 > pip install djangorestframework
 > pip install -U drf-yasg
 > pip install Pillow
+> pip install django-cors-headers
 `````````
 
 3. Make migrations and create database.
