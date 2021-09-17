@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 import random
 import string
@@ -24,7 +25,7 @@ class UserProfile(models.Model):
     followers = models.ManyToManyField(User, related_name='followers', blank=True)
     following = models.ManyToManyField(User, related_name='following', blank=True)
 
-    # readed_books = models.ManyToManyField('Book', related_name='readed_books', blank=True) 
+    readed_books = models.ManyToManyField('Book', related_name='readed_books', blank=True) 
 
     def follow(self, user):
         if user not in self.following.all() and user.user != self.user:
@@ -118,3 +119,40 @@ class Invitation(models.Model):
             [self.receiver.email], 
             fail_silently=False
         )
+
+
+class Author(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
+class Translator(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
+class Publisher(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+class Book(models.Model):
+    title = models.CharField(max_length=150)
+    authors = models.ManyToManyField(Author, related_name='books', blank=True)
+    translators = models.ManyToManyField(Translator, related_name='books', blank=True)
+    publisher = models.ForeignKey(Publisher, related_name='books', on_delete=models.CASCADE, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    cover = models.ImageField(upload_to='covers/', blank=True, null=True, default='defaults/cover.png')
+    # And float number with max 5 and min 0
+    rate = models.FloatField(default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)], blank=True, null=True)
+    goodreads_rate = models.FloatField(default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)], blank=True, null=True)
+    date_created = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f'{self.title} by {self.authors}'
