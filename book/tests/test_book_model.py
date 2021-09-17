@@ -22,3 +22,9 @@ class TestBookModel(TestCase):
         self.assertEqual(self.book.publisher, self.publisher)
         self.assertEqual(self.book.authors.first(), self.auther)
         self.assertEqual(self.book.translators.first(), self.translator)
+        self.assertEqual(self.book.slug, 'harry-potter')
+
+    def test_book_str(self):
+        """Test __str__ method"""
+
+        self.assertIn(self.book.title, str(self.book))

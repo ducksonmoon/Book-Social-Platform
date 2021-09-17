@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from django.template.defaultfilters import slugify
 import random
 import string
 from django.utils import timezone
@@ -154,5 +155,11 @@ class Book(models.Model):
     date_created = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
 
+    slug = models.SlugField(unique=True, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super(Book, self).save(*args, **kwargs)
+    
     def __str__(self):
         return f'{self.title} by {self.authors}'
