@@ -28,20 +28,72 @@ class UserProfile(models.Model):
 
     readed_books = models.ManyToManyField('Book', related_name='readed_books', blank=True) 
 
+    favorite_books = models.ManyToManyField('Book', related_name='favorite_books', blank=True)
+
+    read_later_books = models.ManyToManyField('Book', related_name='read_later_books', blank=True)
+
+    def add_read_later_book(self, book):
+        if book not in self.read_later_books.all():
+            self.read_later_books.add(book)
+            return True
+        return False
+    
+    def remove_read_later_book(self, book):
+        if book in self.read_later_books.all():
+            self.read_later_books.remove(book)
+            return True
+        return False
+    
+    def add_favorite_book(self, book):
+        if book not in self.favorite_books.all() and self.favorite_books.count() < 3:
+            self.favorite_books.add(book)
+            return True
+        return False
+
+    def remove_favorite_book(self, book):
+        if book in self.favorite_books.all():
+            self.favorite_books.remove(book)
+            return True
+        return False
+
     def follow(self, user):
         if user not in self.following.all() and user.user != self.user:
             self.following.add(user.user)
             user.followers.add(self.user)
             return True
         return False
-    
+
     def unfollow(self, user):
         if user.user in self.following.all() and user.user != self.user:
             self.following.remove(user.user)
             user.followers.remove(self.user)
             return True
         return False
-    
+
+    def read_book(self, book):
+        # if books instance not in readed book add it.
+        if book not in self.readed_books.all():
+            self.readed_books.add(book)
+            return True
+        return False
+
+    def unread_book(self, book):
+        # if books instance in readed book remove it.
+        if book in self.readed_books.all():
+            self.readed_books.remove(book)
+            return True
+        return False
+
+    def has_readed_book(self, book):
+        return book in self.readed_books.all()
+
+    def related_following_to_book(self, book):
+        result = []
+        for u in self.following.all():
+            if book in u.userprofile.readed_books.all():
+                result.append(u)
+        return result
+
     def save(self, *args, **kwargs):
         super(UserProfile, self).save(*args, **kwargs)
         # Resize the image to a square
@@ -149,6 +201,7 @@ class Book(models.Model):
     publisher = models.ForeignKey(Publisher, related_name='books', on_delete=models.CASCADE, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     cover = models.ImageField(upload_to='covers/', blank=True, null=True, default='defaults/cover.png')
+    isbn = models.CharField(max_length=255, blank=True, null=True)
     # And float number with max 5 and min 0
     rate = models.FloatField(default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)], blank=True, null=True)
     goodreads_rate = models.FloatField(default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)], blank=True, null=True)
