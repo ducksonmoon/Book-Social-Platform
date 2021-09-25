@@ -64,6 +64,11 @@ This handy guide will help you run projects and read documents:
 > example on port 9000: ``` ./manage.py runserver 9000 ``` <br>
 
 
+## Shell Plus
+````````
+> ./manage.py shell_plus --ipython
+````````
+
 ## Help
 
 You can find Documentations here:
