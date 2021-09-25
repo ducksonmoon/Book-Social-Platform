@@ -178,10 +178,8 @@ class ConfirmCode(models.Model):
     code = models.CharField(
         max_length=255, 
         unique=True,
-        default=''.join(random.choice(string.digits) for _ in range(6))
     )
-    
-    expires = models.DateTimeField(default=timezone.now() + timezone.timedelta(minutes=10))
+    expires = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.user.username
@@ -190,6 +188,21 @@ class ConfirmCode(models.Model):
         if self.code == code and self.expires > timezone.now():
             return True
         return False
+
+    def generate_confirm_code(self):
+        self.code = ''.join(random.choice(string.digits) for _ in range(6))
+        self.expires = timezone.now() + timezone.timedelta(minutes=10)
+        return self.code
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            # self.code must be unique
+            code = self.generate_confirm_code()
+            while ConfirmCode.objects.filter(code=code).exists():
+                code = self.generate_confirm_code()
+            self.code = code
+
+        super(ConfirmCode, self).save(*args, **kwargs)
 
     def send_confirm_code_to_email(self):
         send_mail(
@@ -207,7 +220,6 @@ class Invitation(models.Model):
     code = models.CharField(
         max_length=255, 
         unique=True,
-        default=''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
     )
     date_created = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
@@ -216,12 +228,20 @@ class Invitation(models.Model):
         if self.receiver:
             return self.sender.username + ' invited ' + self.receiver.username
         else:
-            return self.sender.username + ' invited ' + '----'
+            return self.sender.username
 
+    def generate_invitation_code(self):
+        self.code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+        return self.code
+    
     def save(self, *args, **kwargs):
-        # if code wasn't unique change it
-        if Invitation.objects.filter(code=self.code).exists():
-            self.code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+        if not self.code:
+            code = self.generate_invitation_code()
+            # Check if code esxist create new code till it's unique
+            while Invitation.objects.filter(code=code).exists():
+                code = self.generate_invitation_code()
+            self.code = code
+
         super(Invitation, self).save(*args, **kwargs)
 
     def check_invitation(self, code):
