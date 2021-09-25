@@ -26,27 +26,34 @@ class UserProfile(models.Model):
     followers = models.ManyToManyField(User, related_name='followers', blank=True)
     following = models.ManyToManyField(User, related_name='following', blank=True)
 
+    reviews = models.ManyToManyField('Review', related_name='reviews', blank=True)
+
+    liked_books = models.ManyToManyField('Book', related_name='liked_books', blank=True)
+
     readed_books = models.ManyToManyField('Book', related_name='readed_books', blank=True) 
 
     favorite_books = models.ManyToManyField('Book', related_name='favorite_books', blank=True)
 
     read_later_books = models.ManyToManyField('Book', related_name='read_later_books', blank=True)
 
+    rated_books = models.ManyToManyField('PersonRate', related_name='rated_books', blank=True)
+
     def add_read_later_book(self, book):
         if book not in self.read_later_books.all():
             self.read_later_books.add(book)
             return True
         return False
-    
+
     def remove_read_later_book(self, book):
         if book in self.read_later_books.all():
             self.read_later_books.remove(book)
             return True
         return False
-    
+
     def add_favorite_book(self, book):
         if book not in self.favorite_books.all() and self.favorite_books.count() < 3:
             self.favorite_books.add(book)
+            self.read_book(book)
             return True
         return False
 
@@ -74,6 +81,8 @@ class UserProfile(models.Model):
         # if books instance not in readed book add it.
         if book not in self.readed_books.all():
             self.readed_books.add(book)
+            Readers.objects.create(user=self.user, book=book)
+            book.user_readers.add(self.user)
             return True
         return False
 
@@ -81,6 +90,8 @@ class UserProfile(models.Model):
         # if books instance in readed book remove it.
         if book in self.readed_books.all():
             self.readed_books.remove(book)
+            Readers.objects.filter(user=self.user, book=book).delete()
+            book.user_readers.remove(self.user)
             return True
         return False
 
@@ -94,6 +105,51 @@ class UserProfile(models.Model):
                 result.append(u)
         return result
 
+    def rate_book(self, book, rate):
+        if (book in Book.objects.all()) and 0<=rate<=5:
+            self_rate = PersonRate.objects.filter(user=self.user, book=book)
+            if self_rate:
+                self_rate.update(person_rate=rate)
+            else:
+                obj = PersonRate.objects.create(user=self.user, book=book, person_rate=rate)
+                self.rated_books.add(obj)
+                if book not in self.readed_books.all():
+                    self.read_book(book)
+            return True
+
+        return False
+
+    def like_book(self, book):
+        if book not in self.liked_books.all() and book in Book.objects.all():
+            self.liked_books.add(book)
+            book.user_liked.add(self.user)
+            self.read_book(book)
+            return True
+        return False
+    
+    def unlike_book(self, book):
+        if book in self.liked_books.all() and book in Book.objects.all():
+            self.liked_books.remove(book)
+            book.user_liked.remove(self.user)
+            return True
+        return False
+    
+    def add_review(self, book, review):
+        if book in Book.objects.all():
+            review = Review.objects.create(user=self.user, book=book, text=review)
+            self.reviews.add(review)
+            book.reviews.add(review)
+            return True
+        return False
+
+    def remove_review(self, book, review):
+        if review in self.reviews.all():
+            Review.objects.filter(user=self.user, book=book, text=review).delete()
+            self.reviews.remove(review)
+            book.reviews.remove(review)
+            return True
+        return False
+
     def save(self, *args, **kwargs):
         super(UserProfile, self).save(*args, **kwargs)
         # Resize the image to a square
@@ -106,6 +162,15 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+
+class PersonRate(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey('Book', on_delete=models.CASCADE)
+    person_rate = models.FloatField(default=0.0, validators=[MinValueValidator(0.5), MaxValueValidator(5.00)],  blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username + ' ' + self.book.title
 
 
 class ConfirmCode(models.Model):
@@ -174,6 +239,24 @@ class Invitation(models.Model):
         )
 
 
+class Readers(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey('Book', on_delete=models.CASCADE)
+    date_readed = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.user.username + ' read ' + self.book.title
+
+
+class Liked(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey('Book', on_delete=models.CASCADE)
+    date_liked = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.user.username + ' liked ' + self.book.title
+
+
 class Author(models.Model):
     name = models.CharField(max_length=150)
 
@@ -194,6 +277,18 @@ class Publisher(models.Model):
     def __str__(self):
         return self.name
 
+
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey('Book', on_delete=models.CASCADE)
+    text = models.TextField(max_length=1000)
+    date_created = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username + ' review ' + self.book.title
+
+
 class Book(models.Model):
     title = models.CharField(max_length=150)
     authors = models.ManyToManyField(Author, related_name='books', blank=True)
@@ -207,12 +302,23 @@ class Book(models.Model):
     goodreads_rate = models.FloatField(default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)], blank=True, null=True)
     date_created = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
-
     slug = models.SlugField(unique=True, blank=True, null=True)
+    user_readers = models.ManyToManyField(User, related_name='reders_books', blank=True)
+    user_liked = models.ManyToManyField(User, related_name='liked_books', blank=True)
+    reviews = models.ManyToManyField(Review, related_name='books', blank=True)
+
+    def rate_book(self, user, rate):
+        if user in User.objects.all():
+            if not PersonRate.objects.filter(user=user, book=self).exists():
+                PersonRate.objects.create(user=user, book=self, person_rate=rate)
+            else:
+                pr = PersonRate.objects.get(user=user, book=self)
+                pr.person_rate = rate
+                pr.save()
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super(Book, self).save(*args, **kwargs)
-    
+
     def __str__(self):
         return f'{self.title} by {self.authors}'

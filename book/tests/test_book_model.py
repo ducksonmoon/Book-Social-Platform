@@ -1,5 +1,5 @@
 from django.test import TestCase
-from core.models import Book, Author, Publisher, Translator, User, UserProfile
+from core.models import Book, Author, Publisher, Translator, User, UserProfile, Readers
 
 class TestBookModel(TestCase):
     
@@ -110,3 +110,92 @@ class TestBookModel(TestCase):
             userprofile.related_following_to_book(self.book)[0], 
             userprofile2.user
         )
+    
+    def test_rate_book(self):
+        user = User.objects.create(
+            username='test_user',
+            password='test_password',
+        )
+        userprofile = UserProfile.objects.create(user=user, name='Abbas Masomi')
+        userprofile.rate_book(self.book, 5)
+        self.assertEqual(userprofile.rated_books.first().book.title, self.book.title)
+        self.assertEqual(userprofile.rated_books.first().person_rate, 5)
+        userprofile.rate_book(self.book, 3)
+        self.assertEqual(userprofile.rated_books.first().book.title, self.book.title)
+        self.assertEqual(userprofile.rated_books.first().person_rate, 3)
+        userprofile.rate_book(self.book, 1)
+        self.assertEqual(userprofile.rated_books.first().book.title, self.book.title)
+        self.assertEqual(userprofile.rated_books.first().person_rate, 1)
+        userprofile.rate_book(self.book, 0)
+        self.assertEqual(userprofile.rated_books.first().book.title, self.book.title)
+        self.assertEqual(userprofile.rated_books.first().person_rate, 0)
+        userprofile.rate_book(self.book, -1)
+        self.assertEqual(userprofile.rated_books.first().book.title, self.book.title)
+        self.assertEqual(userprofile.rated_books.first().person_rate, 0)
+        userprofile.rate_book(self.book, 6)
+        self.assertEqual(userprofile.rated_books.first().book.title, self.book.title)
+        self.assertEqual(userprofile.rated_books.first().person_rate, 0)
+    
+    def test_rated_added_to_readed(self):
+        """ Test after rate book added to readed. """
+        user = User.objects.create(
+            username='test_user',
+            password='test_password',
+        )
+        userprofile = UserProfile.objects.create(user=user, name='Abbas Masomi')
+        userprofile.read_book(self.book)
+        userprofile.rate_book(self.book, 5)
+        self.assertEqual(userprofile.rated_books.first().book.title, self.book.title)
+        self.assertEqual(userprofile.rated_books.first().person_rate, 5)
+        self.assertEqual(userprofile.readed_books.first().title, self.book.title)
+    
+    def test_favorite_added_to_readed(self):
+        """ Test after favorite book it added to readed. """
+        user = User.objects.create(
+            username='test_user',
+            password='test_password',
+        )
+        userprofile = UserProfile.objects.create(user=user, name='Abbas Masomi')
+        userprofile.add_favorite_book(self.book)
+        self.assertEqual(userprofile.favorite_books.first().title, self.book.title)
+        self.assertEqual(userprofile.readed_books.first().title, self.book.title)
+
+    def test_create_readers_obj_book_fun(self):
+        """Test use read_book function for creating Readers object."""
+        user = User.objects.create(
+            username='test_user',
+            password='test_password',
+        )
+        userprofile = UserProfile.objects.create(user=user, name='Abbas Masomi')
+        userprofile.read_book(self.book)
+        self.assertEqual(userprofile.readed_books.first().title, self.book.title)
+        self.assertEqual(userprofile.readed_books.first(), self.book)
+        self.assertEqual(Readers.objects.first().user, user)
+        self.assertEqual(Readers.objects.first().book, self.book)
+    
+    def test_book_readers_read(self):
+        """Test use book_readers function"""
+        user = User.objects.create(
+            username='test_user',
+            password='test_password',
+        )
+        userprofile = UserProfile.objects.create(user=user, name='Abbas Masomi')
+        userprofile.read_book(self.book)
+        self.assertEqual(userprofile.readed_books.first(), Readers.objects.first().book)
+        self.assertEqual(userprofile.readed_books.first(), self.book)
+        self.assertEqual(self.book.user_readers.first(), Readers.objects.first().user)
+        self.assertCountEqual(self.book.user_readers.all(), [user])
+    
+    def test_book_readers_unread(self):
+        """Test use book_readers function"""
+        user = User.objects.create(
+            username='test_user',
+            password='test_password',
+        )
+        userprofile = UserProfile.objects.create(user=user, name='Abbas Masomi')
+        userprofile.read_book(self.book)
+        userprofile.unread_book(self.book)
+        self.assertEqual(userprofile.readed_books.first(), None)
+        self.assertEqual(Readers.objects.first(), None)
+        self.assertEqual(self.book.user_readers.first(), None)
+        self.assertCountEqual(self.book.user_readers.all(), [])
