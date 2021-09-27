@@ -91,11 +91,11 @@ DATABASES = {
     # PostgreSQL
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'eager_liskov',
+        'NAME': 'nebig_data',
         'USER': 'root',
-        'PASSWORD': 'ZTWejgtwwevvRTGGEvNjpZTF',
-        'HOST': 'nebigdb',
-        'PORT': '3306',
+        'PASSWORD': 'PP2H0P1xEGSK9W33NT3ZfezB',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
