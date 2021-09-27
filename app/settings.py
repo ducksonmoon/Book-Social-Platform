@@ -94,7 +94,7 @@ DATABASES = {
     # PostgreSQL
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'nebig_data',
+        'NAME': 'apidb',
         'USER': 'root',
         'PASSWORD': 'PP2H0P1xEGSK9W33NT3ZfezB',
         'HOST': 'localhost',
