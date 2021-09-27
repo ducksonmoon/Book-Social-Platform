@@ -94,7 +94,7 @@ DATABASES = {
         'NAME': 'nebig_data',
         'USER': 'root',
         'PASSWORD': 'PP2H0P1xEGSK9W33NT3ZfezB',
-        'HOST': 'localhost',
+        'HOST': 'nebigdb',
         'PORT': '5432',
     }
 }
