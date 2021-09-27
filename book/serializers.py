@@ -37,8 +37,21 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    book = serializers.CharField(source='book.title', read_only=True)
+    user = serializers.CharField(source='user.username', read_only=True)
+    date_created = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
+
     class Meta:
-        model = Book
+        model = Review
+        fields = (
+            'id',
+            'book',
+            'user',
+            'text',
+            'date_created'
+        )
+    class Meta:
+        model = Review
         fields = (
             'id', 
             'user', 
@@ -46,6 +59,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             'date_created', 
             'text',
         )
+        read_only_fields = ('user', 'book', 'date_created')
 
 
 class ReviewDetailSerializer(serializers.ModelSerializer):

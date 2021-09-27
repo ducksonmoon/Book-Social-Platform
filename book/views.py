@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib.auth.models import User
 from book import permissions as book_permissions
+from book import serializers
 from core.models import Book, UserProfile, Readers, Review
 from book.serializers import BookSerializer, ReviewSerializer, ReviewDetailSerializer
 
@@ -30,6 +31,12 @@ class BookViewSet(APIView):
         serializer = BookSerializer(book)
         return Response(serializer.data)
 
+
+class BookActions(APIView):
+
+    permission_classes = (book_permissions.IsAuthenticatedOrReadOnly,)
+    authentication_classes = (TokenAuthentication,)
+    
     def post(self, request, slug, action):
         """
         Post request for like, dislike, and favorite, add to reading list.
@@ -74,12 +81,14 @@ class BookViewSet(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class BookReviewViewSet(APIView):
+class BookReviewViewSet(generics.ListAPIView):
     """
     API endpoint that list all reviews.
     """
+    serializer_class = ReviewSerializer
     permission_classes = (book_permissions.IsAuthenticatedOrReadOnly,)
     authentication_classes = (TokenAuthentication,)
+    queryset = Review.objects.all()
 
     def get(self, request, slug):
         # Return all reviews for a book
@@ -108,6 +117,7 @@ class ReviewDetailViewSet(APIView):
     Review endpoint for each comment.
     Owner can change or delete a comment.
     """
+    serializer_class = ReviewDetailSerializer
     permission_classes = (book_permissions.IsAuthenticatedOrReadOnly,)
     authentication_classes = (TokenAuthentication,)
 
