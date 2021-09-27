@@ -20,13 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9%jn$u9f7o+y-8*)=bx4_m&6n*^(pm9t17$-5a3^smw&pvj7y_'
+SECRET_KEY = 'oops-i-did-it-again.'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    'https://nebig.iran.liara.run/',
+    'https://api.nebigapp.com/'
+]
 
 # Application definition
 
@@ -68,7 +70,7 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -86,7 +88,6 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
 DATABASES = {
     # PostgreSQL
     'default': {
@@ -94,10 +95,20 @@ DATABASES = {
         'NAME': 'nebig_data',
         'USER': 'root',
         'PASSWORD': 'PP2H0P1xEGSK9W33NT3ZfezB',
-        'HOST': 'nebigdb',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
+'''
+DATABASES = {
+    # SQLite
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+'''
+
 
 
 # Password validation
@@ -150,3 +161,12 @@ EMAIL_HOST_PASSWORD = 'kxrrfjsfmpgwteiq'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+STATIC_URL = '/static/'
+
+import os
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
