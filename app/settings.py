@@ -27,7 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'https://nebig.iran.liara.run/',
-    'https://api.nebigapp.com/'
+    'https://api.nebigapp.com/',
+    'localhost',
+    '127.0.0.1',
 ]
 
 # Application definition
