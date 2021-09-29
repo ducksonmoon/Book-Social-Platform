@@ -23,6 +23,8 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf.urls import url
 from django.views.generic import TemplateView
+from django.views.generic.base import RedirectView
+
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -44,6 +46,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/' , include('user.urls')),
     path('book/' , include('book.urls')),
+    # docs/ redirect to https://documenter.getpostman.com/view/14262320/UUy1e76q
+    path('docs/', RedirectView.as_view(url='https://documenter.getpostman.com/view/14262320/UUy1e76q', permanent=True)),
 ]
 
 if settings.DEBUG:
