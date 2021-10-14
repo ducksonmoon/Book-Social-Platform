@@ -361,8 +361,10 @@ class BookList(models.Model):
 
     def save(self, *args, **kwargs):
         slug = slugify(self.name)
-        # if self.slug isn't unique, create new slug with random string
-        while BookList.objects.filter(slug=slug).exists():
-            slug = self.slug + '-' + str(random.randint(1, 2000))
-        self.slug = slug
+        if not(slug == self.slug):
+            # if self.slug isn't unique, create new slug with random string
+            while BookList.objects.filter(slug=slug).exists():
+                slug = self.slug + '-' + str(random.randint(1, 2000))
+            self.slug = slug
+
         super(BookList, self).save(*args, **kwargs)
