@@ -354,6 +354,15 @@ class BookList(models.Model):
     books = models.ManyToManyField(Book, related_name='book_lists', blank=True)
     date_created = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
+    slug = models.SlugField(unique=True, blank=True, null=True)
 
     def __str__(self):
         return self.name + ' by ' + self.user.username
+
+    def save(self, *args, **kwargs):
+        slug = slugify(self.name)
+        # if self.slug isn't unique, create new slug with random string
+        while BookList.objects.filter(slug=slug).exists():
+            slug = self.slug + '-' + str(random.randint(1, 2000))
+        self.slug = slug
+        super(BookList, self).save(*args, **kwargs)
