@@ -43,14 +43,13 @@ class BookListAddBookView(APIView):
     authentication_classes = (TokenAuthentication,)
 
     def post(self, request, slug):
-        print(request.data)
         book_list = get_object_or_404(BookList, slug=slug)
         serializer = BookListAddBookSerializer(data=request.data)
         if serializer.is_valid():
             book = get_object_or_404(Book, id=serializer.data['book_id'])
             if book not in book_list.books.all():
                 book_list.books.add(book)
-                return Response(serializer.data)
+                return Response(BookListSerializer(book_list).data)
             else:
                 return Response({'error': 'این کتاب در لیست وجود دارد'})
         else:
