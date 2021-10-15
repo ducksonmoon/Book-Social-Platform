@@ -4,11 +4,12 @@ from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.views import APIView
 
 from booklist.permissions import IsOwnerOrReadOnly
 from core.models import Book, BookList
-from booklist.serializers import BookListSerializer
-
+from booklist.serializers import BookListSerializer, BookListAddBookSerializer
+from book.serializers import BookSerializer
 class BookListViewSet(viewsets.ModelViewSet):
     queryset = BookList.objects.all()
     serializer_class = BookListSerializer
@@ -32,3 +33,25 @@ class BookListUpdateView(generics.RetrieveUpdateDestroyAPIView):
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset, slug=self.kwargs['slug'])
         return obj
+
+
+# Add specif book to a list
+class BookListAddBookView(APIView):
+    """ Add a book to a list """
+    serializer_class = BookListAddBookSerializer
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
+    authentication_classes = (TokenAuthentication,)
+
+    def post(self, request, slug):
+        print(request.data)
+        book_list = get_object_or_404(BookList, slug=slug)
+        serializer = BookListAddBookSerializer(data=request.data)
+        if serializer.is_valid():
+            book = get_object_or_404(Book, id=serializer.data['book_id'])
+            if book not in book_list.books.all():
+                book_list.books.add(book)
+                return Response(serializer.data)
+            else:
+                return Response({'error': 'این کتاب در لیست وجود دارد'})
+        else:
+            return Response({'error': 'اطلاعات ارسالی نامعتبر است'})
