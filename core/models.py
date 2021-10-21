@@ -360,9 +360,9 @@ class BookList(models.Model):
         return self.name + ' by ' + self.user.username
 
     def save(self, *args, **kwargs):
-        slug = slugify(''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6)))
         # if it's not first time save slug don't change it
         if not(self.slug):
+            slug = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
             # if self.slug isn't unique, create new slug with random string
             while BookList.objects.filter(slug=slug).exists():
                 slug = self.slug + '-' + str(random.randint(1, 2000))
