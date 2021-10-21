@@ -318,6 +318,7 @@ class Book(models.Model):
     cover = models.ImageField(upload_to='covers/', blank=True, null=True, default='defaults/cover.png')
     pages = models.IntegerField(default=0, blank=True, null=True)
     isbn = models.CharField(max_length=255, blank=True, null=True)
+    size = models.ForeignKey('Size', on_delete=models.SET_NULL, blank=True, null=True)
     # And float number with max 5 and min 0
     rate = models.FloatField(default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)], blank=True, null=True)
     goodreads_rate = models.FloatField(default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)], blank=True, null=True)
@@ -376,3 +377,13 @@ class BookList(models.Model):
                 slug = self.slug + '-' + str(random.randint(1, 2000))
             self.slug = slug
         super(BookList, self).save(*args, **kwargs)
+
+
+class Size(models.Model):
+    """
+    Size of book.
+    """
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
