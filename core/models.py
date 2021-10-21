@@ -311,6 +311,7 @@ class Review(models.Model):
 
 class Book(models.Model):
     title = models.CharField(max_length=150)
+    subtitle = models.CharField(max_length=150, blank=True, null=True)
     authors = models.ManyToManyField(Author, related_name='books', blank=True)
     translators = models.ManyToManyField(Translator, related_name='books', blank=True)
     publisher = models.ForeignKey(Publisher, related_name='books', on_delete=models.CASCADE, blank=True, null=True)
