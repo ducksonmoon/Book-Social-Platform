@@ -337,7 +337,14 @@ class Book(models.Model):
                 pr.save()
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
+        if not self.slug:  
+            slug = slugify(self.title)
+            if slug == '':
+                slug = self.title.replace(' ', '-')
+            while Book.objects.filter(slug=slug).exists():
+                slug = slug + '-' + str(random.randint(1, 2000))
+            self.slug = slug
+        print(self.slug)
         super(Book, self).save(*args, **kwargs)
 
     def __str__(self):
