@@ -341,7 +341,7 @@ class Book(models.Model):
         super(Book, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.title} by {self.authors}'
+        return self.title
 
 
 class BookList(models.Model):
