@@ -316,6 +316,7 @@ class Book(models.Model):
     publisher = models.ForeignKey(Publisher, related_name='books', on_delete=models.CASCADE, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     cover = models.ImageField(upload_to='covers/', blank=True, null=True, default='defaults/cover.png')
+    pages = models.IntegerField(default=0, blank=True, null=True)
     isbn = models.CharField(max_length=255, blank=True, null=True)
     # And float number with max 5 and min 0
     rate = models.FloatField(default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)], blank=True, null=True)

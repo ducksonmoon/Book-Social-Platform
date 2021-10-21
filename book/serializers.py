@@ -28,6 +28,7 @@ class BookSerializer(serializers.ModelSerializer):
             'translators', 
             'publisher', 
             'isbn', 
+            'pages',
             'description', 
             'cover',
             'rate',
