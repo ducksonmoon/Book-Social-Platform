@@ -362,10 +362,9 @@ class BookList(models.Model):
     def save(self, *args, **kwargs):
         # if it's not first time save slug don't change it
         if not(self.slug):
-            slug = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+            slug = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
             # if self.slug isn't unique, create new slug with random string
             while BookList.objects.filter(slug=slug).exists():
                 slug = self.slug + '-' + str(random.randint(1, 2000))
             self.slug = slug
-
         super(BookList, self).save(*args, **kwargs)
