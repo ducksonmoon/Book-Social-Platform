@@ -351,7 +351,7 @@ class BookList(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    books = models.ManyToManyField(Book, related_name='book_lists', blank=True)
+    books = models.ManyToManyField(Book, related_name='book_lists', blank=True, null=True)
     date_created = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
     slug = models.SlugField(unique=True, blank=True, null=True)
