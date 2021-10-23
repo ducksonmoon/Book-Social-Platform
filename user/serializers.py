@@ -40,7 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
         if not validate_email(value):
             raise ValidationError('Email is invalid.')
         elif User.objects.filter(email=value).exists():
-            raise ValidationError('Email already exists.')
+            raise ValidationError('ایمیل قبلا ثبت شده است')
         return value
 
     def create(self, validated_data):
