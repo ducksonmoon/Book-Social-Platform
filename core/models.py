@@ -326,7 +326,7 @@ class Book(models.Model):
     goodreads_rate = models.FloatField(default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)], blank=True, null=True)
     date_created = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
-    slug = models.SlugField(unique=True, blank=True, null=True)
+    slug = models.SlugField(unique=True, blank=True, null=True, max_length=255)
     user_readers = models.ManyToManyField(User, related_name='reders_books', blank=True)
     user_liked = models.ManyToManyField(User, related_name='liked_books', blank=True)
     reviews = models.ManyToManyField(Review, related_name='books', blank=True)
