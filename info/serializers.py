@@ -5,5 +5,4 @@ from core.models import About
 class AboutSerializer(serializers.ModelSerializer):
     class Meta:
         model = About
-        fields = '__all__'
-        read_only_fields = ('id',)
+        fields = ('title', 'description', 'image',)
