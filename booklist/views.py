@@ -58,15 +58,20 @@ class BookListAddBookView(APIView):
             return Response({'error': 'اطلاعات ارسالی نامعتبر است'})
 
 
-class MainBookListView(generics.ListAPIView):
+class MainBookListView(generics.RetrieveAPIView):
     """
     صفحه مرجع 
     با عوض شدن لیست مین تفییر می‌کند.
     """
+    queryset = BookList.objects.all()
     serializer_class = BookListSerializer
-    try:
-        queryset = BookList.objects.get(slug='main')
-    except BookList.DoesNotExist:
-        queryset = []
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        try:
+            obj = queryset.get(slug='main')
+        except BookList.DoesNotExist:
+            obj = None
+        return obj
