@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
@@ -10,6 +11,7 @@ from booklist.permissions import IsOwnerOrReadOnly
 from core.models import Book, BookList
 from booklist.serializers import BookListSerializer, BookListAddBookSerializer
 from book.serializers import BookSerializer
+
 class BookListViewSet(viewsets.ModelViewSet):
     queryset = BookList.objects.all()
     serializer_class = BookListSerializer
@@ -54,3 +56,17 @@ class BookListAddBookView(APIView):
                 return Response({'error': 'این کتاب در لیست وجود دارد'})
         else:
             return Response({'error': 'اطلاعات ارسالی نامعتبر است'})
+
+
+class MainBookListView(generics.ListAPIView):
+    """
+    صفحه مرجع 
+    با عوض شدن لیست مین تفییر می‌کند.
+    """
+    serializer_class = BookListSerializer
+    try:
+        queryset = BookList.objects.get(slug='main')
+    except BookList.DoesNotExist:
+        queryset = []
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)

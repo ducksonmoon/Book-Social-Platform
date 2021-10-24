@@ -1,5 +1,6 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
+from django.urls import reverse
 
 from core.models import BookList, Book
 from django.contrib.auth.models import User
@@ -49,3 +50,22 @@ class BookListAPITestCase(TestCase):
         response = self.client.post('/list/books/', {'name': ''})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(BookList.objects.count(), 0)
+
+    def test_get_main_booklist_non_exsistent(self):
+        # Get main booklist
+        MAIN_URL = reverse('booklist:main-booklist')
+        response = self.client.get(MAIN_URL)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_main_booklist(self):
+        # Get main booklist
+        MAIN_URL = reverse('booklist:main-booklist')
+        booklist = BookList.objects.create(name='main', user=self.user, slug='main')
+        ADD_BOOK_URL = reverse('booklist:booklist-add-book', kwargs={'slug': booklist.slug})
+        Book.objects.create(title='test')
+        self.client.post(ADD_BOOK_URL, {'slug': 'main', 'book_id': 1})
+        response = self.client.get(MAIN_URL)
+        books = BookList.objects.get(slug='main').books.all()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(books.count(), 1)
