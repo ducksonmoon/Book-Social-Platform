@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'book.apps.BookConfig',
     'booklist.apps.BooklistConfig',
     'info.apps.InfoConfig',
+    'accounts.apps.AccountsConfig',
 
     'drf_yasg',
     'corsheaders',

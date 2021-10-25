@@ -50,6 +50,7 @@ urlpatterns = [
     path('docs/', RedirectView.as_view(url='https://documenter.getpostman.com/view/14262320/UUy1e76q', permanent=True)),
     path('list/', include('booklist.urls')),
     path('info/', include('info.urls')),
+    path('accounts/', include('accounts.urls')),
 ]
 
 if settings.DEBUG:
