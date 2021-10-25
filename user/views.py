@@ -148,10 +148,6 @@ class InvitationView(generics.ListAPIView):
         Return invitations of authenticated user.
         """
         qs = self.get_queryset()
-        # If there's no invitations, Response You have no invitations.
-        if len(qs) == 0:
-            return Response({'status': 'success', 'code': status.HTTP_200_OK, 'message': 'You have no invitations.'})
-
         serializer = self.get_serializer(qs, many=True)
         return Response({'status': 'success', 'code': status.HTTP_200_OK, 'message': 'Invitations retrieved successfully.',
                          'invitations': serializer.data}, status=status.HTTP_200_OK)
