@@ -10,13 +10,13 @@ from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
-
 from django.contrib.auth.models import User
+
+from book.paginations import SmallPagesPagination
 from book import permissions as book_permissions
 from book import serializers
 from core.models import Book, UserProfile, Readers, Review, Liked
 from book.serializers import BookSerializer, ReviewSerializer, ReviewDetailSerializer
-
 
 class BookViewSet(APIView):
     """
@@ -108,13 +108,19 @@ class BookReviewViewSet(generics.ListAPIView):
     permission_classes = (book_permissions.IsAuthenticatedOrReadOnly,)
     authentication_classes = (TokenAuthentication,)
     queryset = Review.objects.all()
+    pagination_class = SmallPagesPagination
+    ALLOWED_METHODS = ('GET', 'POST')
 
     def get(self, request, slug):
         # Return all reviews for a book
         book = get_object_or_404(Book, slug=slug)
         reviews = Review.objects.filter(book=book)
         serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
+        # paginate
+        page = self.paginate_queryset(reviews)
+        if page is not None:
+            serializer = ReviewSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
     def post(self, request, slug):
         # Sumbit a new review.
