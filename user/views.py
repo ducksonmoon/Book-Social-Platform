@@ -37,16 +37,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Retrieve and return authentication user"""
         return self.request.user.userprofile
-    
-    # cover + str when get request
-    def get(self, request, *args, **kwargs):
-        """Handle GET request"""
-        # Change cover url field
-        user = self.get_object()
-        # get absolute url
-        abs_url = request.build_absolute_uri(user.cover.url)
-        user.cover.url = abs_url
-        return Response(UserSerializer(user).data)
+
 
 class ChangePasswordView(generics.UpdateAPIView):
         """
