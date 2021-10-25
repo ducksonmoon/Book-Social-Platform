@@ -1,10 +1,11 @@
-from django.contrib.admin.decorators import action
 from rest_framework import viewsets, mixins, status, views, generics, permissions
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
+from rest_framework import filters
+
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -172,3 +173,25 @@ class ReviewDetailViewSet(APIView):
             raise ValidationError(error_dict)
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT, data={"message": "حذف شد"})
+
+
+class SearchViewSet(generics.ListAPIView):
+    """
+    API endpoint that list Search results.
+    """
+    queryset = Book.objects.all()
+    permission_classes = (book_permissions.IsAuthenticatedOrReadOnly,)
+    authentication_classes = (TokenAuthentication,)
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
+    Method_Allowed = ['GET']
+
+    def get(self, request):
+        # Return all books
+        query = request.GET.get('search')
+        if query:
+            books = Book.objects.filter(title__icontains=query)
+            serializer = BookSerializer(books, many=True)
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'درخواست نامعتبر است'})
