@@ -342,14 +342,23 @@ class Book(models.Model):
                 pr.save()
 
     def save(self, *args, **kwargs):
+
         if not self.slug:  
-            slug = slugify(self.title)
-            if slug == '':
-                slug = self.title.replace(' ', '-')
+            # Rename image to random name
+            name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12)) + '.' + self.cover.name.split('.')[-1]
+            # check not exist cover name
+            while Book.objects.filter(cover=name).exists():
+                name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(22)) + '.' + self.cover.name.split('.')[-1]
+            self.cover.name = name
+
+            # Slugify title
+            # Random 6 char slug
+            slug = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+            # check not exist slug
             while Book.objects.filter(slug=slug).exists():
-                slug = slug + '-' + str(random.randint(1, 2000))
+                slug = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
             self.slug = slug
-        print(self.slug)
+
         super(Book, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
