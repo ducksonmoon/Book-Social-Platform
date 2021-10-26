@@ -44,17 +44,19 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
-
+    # Apps:
     'core.apps.CoreConfig',
     'user.apps.UserConfig',
     'book.apps.BookConfig',
     'booklist.apps.BooklistConfig',
     'info.apps.InfoConfig',
     'accounts.apps.AccountsConfig',
-
+    # Third-parties:
     'drf_yasg',
     'corsheaders',
     'django_extensions',
+    # Custom Modules:
+    'utils',
 ]
 
 MIDDLEWARE = [
