@@ -23,6 +23,8 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
+
+    url = serializers.CharField(source='get_absolute_url', read_only=True)
     publisher = serializers.CharField(source='publisher.name')
     authors = serializers.SerializerMethodField()
 
@@ -45,6 +47,7 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = (
             'id', 
+            'url',
             'title', 
             'authors', 
             'translators', 

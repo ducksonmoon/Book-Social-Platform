@@ -5,6 +5,7 @@ from django.core.mail import send_mail
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.template.defaultfilters import slugify
 from django.utils import timezone
+from django.urls import reverse
 
 from PIL import Image
 import random
@@ -350,6 +351,9 @@ class Book(models.Model):
             self.slug = slug
         print(self.slug)
         super(Book, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('book:book_detail', kwargs={'slug': self.slug})
 
     def __str__(self):
         return self.title
