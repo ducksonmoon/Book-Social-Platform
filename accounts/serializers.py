@@ -55,10 +55,6 @@ class ProfileSerializer(serializers.ModelSerializer):
         books = obj.read_later_books.all()[:3]
         return BookSerializer(books, many=True).data
 
-    social_media_id = serializers.SerializerMethodField()
-    def get_social_media_id(self, obj):
-        return obj.social_media_id
-
 
     class Meta:
         model = UserProfile
