@@ -25,6 +25,10 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_number_of_followings(self, obj):
         return obj.following.count()
     
+    number_of_read_later_books = serializers.SerializerMethodField()
+    def get_number_of_read_later_books(self, obj):
+        return obj.read_later_books.count()
+
     last_books_readed = serializers.SerializerMethodField()
     def get_last_books_readed(self, obj):
         books = obj.readed_books.all()[:3]
@@ -46,12 +50,21 @@ class ProfileSerializer(serializers.ModelSerializer):
         created_lists = BookList.objects.filter(user=obj.user)[:3]
         return BookListSerializer(created_lists, many=True).data
 
+    last_read_later_books = serializers.SerializerMethodField()
+    def get_last_read_later_books(self, obj):
+        books = obj.read_later_books.all()[:3]
+        return BookSerializer(books, many=True).data
+
+    social_media_id = serializers.SerializerMethodField()
+    def get_social_media_id(self, obj):
+        return obj.social_media_id
+
 
     class Meta:
         model = UserProfile
         fields = (
-            'id', 'username', 'name', 'birth_date', 'avatar', 'social_media_link', 'followers', 'following',
-            'number_of_favorits', 'number_of_likes', 'number_of_reads', 'number_of_followings',
-            'last_books_readed', 'last_books_liked', 'favorit_books', 'last_created_lists'
+            'id', 'username', 'name', 'birth_date', 'avatar', 'social_media_link',
+            'number_of_favorits', 'number_of_likes', 'number_of_reads', 'number_of_followings', 'number_of_read_later_books',
+            'last_books_readed', 'last_books_liked', 'favorit_books', 'last_created_lists', 'last_read_later_books'
         )
-        read_only_fields = ('id', 'username', 'followers', 'following',)
+        read_only_fields = ('id', 'username',)
