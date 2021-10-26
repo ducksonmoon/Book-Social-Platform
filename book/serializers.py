@@ -2,6 +2,26 @@ from rest_framework import serializers
 from core.models import Book, Author, Publisher, User, Review
 
 
+
+class ReviewSerializer(serializers.ModelSerializer):
+    book = serializers.CharField(source='book.title', read_only=True)
+    user = serializers.CharField(source='user.username', read_only=True)
+    avatar = serializers.ImageField(source='user.userprofile.avatar', read_only=True)
+    date_created = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
+
+    class Meta:
+        model = Review
+        fields = (
+            'id', 
+            'user', 
+            'avatar',
+            'book', 
+            'date_created', 
+            'text',
+        )
+        read_only_fields = ('user', 'book', 'date_created', 'avatar')
+
+
 class BookSerializer(serializers.ModelSerializer):
     publisher = serializers.CharField(source='publisher.name')
     authors = serializers.SerializerMethodField()
@@ -17,7 +37,9 @@ class BookSerializer(serializers.ModelSerializer):
     three_comments = serializers.SerializerMethodField()
 
     def get_three_comments(self, obj):
-        return [review.text for review in obj.reviews.all()[:3]]
+        reviews = obj.reviews.all()[:3]
+        return ReviewSerializer(reviews, many=True).data
+
 
     class Meta:
         model = Book
@@ -37,47 +59,23 @@ class BookSerializer(serializers.ModelSerializer):
         )
 
 
-class ReviewSerializer(serializers.ModelSerializer):
-    book = serializers.CharField(source='book.title', read_only=True)
-    user = serializers.CharField(source='user.username', read_only=True)
-    date_created = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
-
-    class Meta:
-        model = Review
-        fields = (
-            'id',
-            'book',
-            'user',
-            'text',
-            'date_created'
-        )
-    class Meta:
-        model = Review
-        fields = (
-            'id', 
-            'user', 
-            'book', 
-            'date_created', 
-            'text',
-        )
-        read_only_fields = ('user', 'book', 'date_created')
-
-
 class ReviewDetailSerializer(serializers.ModelSerializer):
     user = serializers.CharField(source='user.username', read_only=True)
     book = serializers.CharField(source='book.title', read_only=True)
+    avatar = serializers.ImageField(source='user.userprofile.avatar', read_only=True)
     date_created = serializers.DateTimeField(format='%Y-%m-%d', read_only=True)
 
     class Meta:
         model = Review
         fields = (
             'id', 
-            'user', 
+            'user',
+            'avatar',
             'book', 
             'date_created', 
             'text',
         )
-        read_only_fields = ('id', 'user', 'book', 'date_created')
+        read_only_fields = ('id', 'user', 'book', 'date_created', 'avatar')
         extra_kwargs = {
             'text': {'required': True},
         }
