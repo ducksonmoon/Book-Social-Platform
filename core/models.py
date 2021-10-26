@@ -20,7 +20,7 @@ class UserProfile(models.Model):
         ('twitter', 'Twitter'),   # There was 3 options but for but we only use one.
     )
     social_media_username = models.CharField(max_length=255, blank=True, choices=SOCIAL_MEDIA_CHOICES)
-    social_media_link = models.URLField(blank=True)
+    social_media_link = models.CharField(max_length=255, blank=True)
     # User is invited: boolean -> True or False
     is_invited = models.BooleanField(default=False)
     followers = models.ManyToManyField(User, related_name='followers', blank=True)
