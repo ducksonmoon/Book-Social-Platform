@@ -8,6 +8,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework import filters
 
+from book.paginations import SmallPagesPagination
 from booklist.permissions import IsOwnerOrReadOnly
 from core.models import Book, BookList
 from booklist.serializers import BookListSerializer, BookListAddBookSerializer
@@ -29,7 +30,7 @@ class BookListViewSet(viewsets.ModelViewSet):
 class BookListUpdateView(generics.RetrieveUpdateDestroyAPIView):
     queryset = BookList.objects.all()
     serializer_class = BookListSerializer
-    permission_classes = (IsOwnerOrReadOnly,)
+    permission_classes = (IsOwnerOrReadOnly, IsAuthenticated)
     authentication_classes = (TokenAuthentication,)
 
     def get_object(self):
