@@ -27,21 +27,35 @@ class BookSerializer(serializers.ModelSerializer):
     url = serializers.CharField(source='get_absolute_url', read_only=True)
     publisher = serializers.CharField(source='publisher.name')
     authors = serializers.SerializerMethodField()
-
     def get_authors(self, obj):
         return [author.name for author in obj.authors.all()]
 
     translators = serializers.SerializerMethodField()
-
     def get_translators(self, obj):
         return [translator.name for translator in obj.translators.all()]
 
     three_comments = serializers.SerializerMethodField()
-
     def get_three_comments(self, obj):
         reviews = obj.reviews.all()[:3]
         return ReviewSerializer(reviews, many=True).data
 
+    three_friends = serializers.SerializerMethodField()
+    def get_three_friends(self, obj):
+        user = self.context['request'].user
+        result = []
+        if user.is_authenticated:
+            res = user.userprofile.related_following_to_book(obj)
+            for user in res:
+                u = {
+                    'username': user.username,
+                    'avatar': user.userprofile.avatar.url,
+                    'rate': 0,
+                }
+                # TODO: Add this to the userprofile
+                # if user.userprofile.rate_to_book(obj):
+                #     u['rate'] = user.userprofile.rate_to_book(obj)
+                result.append(u)
+        return result
 
     class Meta:
         model = Book
@@ -58,7 +72,8 @@ class BookSerializer(serializers.ModelSerializer):
             'cover',
             'rate',
             'goodreads_rate',
-            'three_comments'
+            'three_friends',
+            'three_comments',
         )
 
 

@@ -30,7 +30,7 @@ class BookViewSet(APIView):
         Return a book instance.
         """
         book = get_object_or_404(Book, slug=slug)
-        serializer = BookSerializer(book)
+        serializer = BookSerializer(book, context={'request': self.request})
         return Response(serializer.data)
 
     def post(self, request, slug):
