@@ -40,7 +40,7 @@ class BookListUpdateView(generics.RetrieveUpdateDestroyAPIView):
         return obj
 
 
-# Add specif book to a list
+# Add specific book to a list
 class BookListAddBookView(APIView):
     """ Add a book to a list """
     serializer_class = BookListAddBookSerializer
