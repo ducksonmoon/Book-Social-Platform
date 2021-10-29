@@ -45,13 +45,13 @@ class ProfileView(generics.RetrieveAPIView):
             # Follow other user
             if request.data['action'] == 'follow':
                 user.follow(profile)
-                return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_200_OK, data={'message': 'You are now following {}'.format(username)})
             # Unfollow other user
             elif request.data['action'] == 'unfollow':
                 user.unfollow(profile)
-                return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_200_OK, data={'message': 'You are no longer following {}'.format(username)})
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
         else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND, data={'message': 'User {} does not exist'.format(username)})
