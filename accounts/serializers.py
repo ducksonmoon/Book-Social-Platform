@@ -4,6 +4,8 @@ from rest_framework import serializers
 from core.models import UserProfile, BookList
 from book.serializers import BookSerializer
 from booklist.serializers import BookListSerializer
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     """
     Serializer for UserProfile model
