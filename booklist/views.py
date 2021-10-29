@@ -16,6 +16,7 @@ from book.serializers import BookSerializer
 
 class BookListViewSet(viewsets.ModelViewSet):
     queryset = BookList.objects.all()
+    pagination_class = SmallPagesPagination
     serializer_class = BookListSerializer
     permission_classes = (IsAuthenticated,)
     authentication_classes = (TokenAuthentication,)
@@ -59,18 +60,8 @@ class BookListAddBookView(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'درخواست نامعتبر است'})
 
-    def post(self, request, slug):
-        book_list = get_object_or_404(BookList, slug=slug)
-        serializer = BookListAddBookSerializer(data=request.data)
-        if serializer.is_valid():
-            book = get_object_or_404(Book, id=serializer.data['book_id'])
-            if book not in book_list.books.all():
-                book_list.books.add(book)
-                return Response(BookListSerializer(book_list).data)
-            else:
-                return Response({'error': 'این کتاب در لیست وجود دارد'})
-        else:
-            return Response({'error': 'اطلاعات ارسالی نامعتبر است'})
+    def get_queryset(self):
+        return Book.objects.filter(booklist=self.kwargs['book_list_id'])
 
 
 class MainBookListView(generics.RetrieveAPIView):
