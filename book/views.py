@@ -196,7 +196,7 @@ class SearchViewSet(generics.ListAPIView):
         # Return all books
         query = request.GET.get('search')
         if query:
-            books = Book.objects.filter(title__icontains=query)
+            books = Book.objects.filter(title__icontains=query)[:10]
             serializer = BookSerializer(books, many=True)
             return Response(serializer.data)
         else:
