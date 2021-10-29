@@ -30,7 +30,7 @@ class ProfileView(generics.RetrieveAPIView):
 
         profile = self.get_object(username)
         if profile:
-            serializer = self.serializer_class(profile)
+            serializer = self.serializer_class(profile, context={'request': self.request})
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)

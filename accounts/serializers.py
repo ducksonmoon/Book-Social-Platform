@@ -4,6 +4,7 @@ from rest_framework import serializers
 from core.models import UserProfile, BookList
 from book.serializers import BookSerializer
 from booklist.serializers import BookListSerializer
+from accounts.functions import is_following
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -11,6 +12,14 @@ class ProfileSerializer(serializers.ModelSerializer):
     Serializer for UserProfile model
     """
     username = serializers.CharField(source='user.username')
+    is_following = serializers.SerializerMethodField()
+    def get_is_following(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return is_following(user, obj.user)
+        else:
+            return False
+
     number_of_favorits = serializers.SerializerMethodField()
     def get_number_of_favorits(self, obj):
         return obj.favorite_books.count()
@@ -62,6 +71,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = (
             'id', 'username', 'name', 'birth_date', 'avatar', 'social_media_link',
+            'is_following',
             'number_of_favorits', 'number_of_likes', 'number_of_reads', 'number_of_followings', 'number_of_read_later_books',
             'last_books_readed', 'last_books_liked', 'favorit_books', 'last_created_lists', 'last_read_later_books'
         )
