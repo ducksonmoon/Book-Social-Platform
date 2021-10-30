@@ -1,4 +1,6 @@
+from django.conf import settings
 from rest_framework import serializers
+
 from core.models import Book, Author, Publisher, User, Review
 
 
@@ -59,6 +61,12 @@ class BookSerializer(serializers.ModelSerializer):
         except:
             pass
         return result
+    
+    # Add current site to cover image
+    cover = serializers.SerializerMethodField()
+    def get_cover(self, obj):
+        base_url = settings.BASE_URL
+        return base_url + obj.cover.url
 
     class Meta:
         model = Book
