@@ -41,20 +41,23 @@ class BookSerializer(serializers.ModelSerializer):
 
     three_friends = serializers.SerializerMethodField()
     def get_three_friends(self, obj):
-        user = self.context['request'].user
         result = []
-        if user.is_authenticated:
-            res = user.userprofile.related_following_to_book(obj)
-            for user in res:
-                u = {
-                    'username': user.username,
-                    'avatar': user.userprofile.avatar.url,
-                    'rate': 0,
-                }
-                # TODO: Add this to the userprofile
-                # if user.userprofile.rate_to_book(obj):
-                #     u['rate'] = user.userprofile.rate_to_book(obj)
-                result.append(u)
+        try:
+            user = self.context['request'].user            
+            if user.is_authenticated:
+                res = user.userprofile.related_following_to_book(obj)
+                for user in res:
+                    u = {
+                        'username': user.username,
+                        'avatar': user.userprofile.avatar.url,
+                        'rate': 0,
+                    }
+                    # TODO: Add this to the userprofile
+                    # if user.userprofile.rate_to_book(obj):
+                    #     u['rate'] = user.userprofile.rate_to_book(obj)
+                    result.append(u)
+        except:
+            pass
         return result
 
     class Meta:
