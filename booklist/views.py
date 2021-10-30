@@ -1,3 +1,4 @@
+from django.db.models import query
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 
@@ -81,3 +82,19 @@ class MainBookListView(generics.RetrieveAPIView):
         except BookList.DoesNotExist:
             obj = None
         return obj
+
+
+class AllBookListView(generics.ListAPIView):
+    """
+    صفحه لیست کتاب های اضافه شده
+    """
+    serializer_class = BookSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get_queryset(self):
+        # Get book_set for selected book list
+        q = BookList.objects.all()
+        obj = get_object_or_404(q, slug=self.kwargs['slug'])
+        books = obj.books.all()
+        return books
