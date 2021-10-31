@@ -48,10 +48,11 @@ class BookSerializer(serializers.ModelSerializer):
             user = self.context['request'].user            
             if user.is_authenticated:
                 res = user.userprofile.related_following_to_book(obj)
+                base_url = settings.BASE_URL
                 for user in res:
                     u = {
                         'username': user.username,
-                        'avatar': user.userprofile.avatar.url,
+                        'avatar': base_url + user.userprofile.avatar.url,
                         'rate': 0,
                     }
                     # TODO: Add this to the userprofile
