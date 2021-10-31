@@ -42,13 +42,12 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     last_books_readed = serializers.SerializerMethodField()
     def get_last_books_readed(self, obj):
-        books = obj.readed_books.all()[:3]
+        books = obj.readed_books.all()[:2]
         return BookSerializer(books, many=True).data
 
-    
     last_books_liked = serializers.SerializerMethodField()
     def get_last_books_liked(self, obj):
-        books = obj.liked_books.all()[:3]
+        books = obj.liked_books.all()[:2]
         return BookSerializer(books, many=True).data
     
     favorit_books = serializers.SerializerMethodField()
@@ -58,12 +57,12 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     last_created_lists = serializers.SerializerMethodField()
     def get_last_created_lists(self, obj):
-        created_lists = BookList.objects.filter(user=obj.user)[:3]
+        created_lists = BookList.objects.filter(user=obj.user)[:2]
         return BookListSerializer(created_lists, many=True).data
 
     last_read_later_books = serializers.SerializerMethodField()
     def get_last_read_later_books(self, obj):
-        books = obj.read_later_books.all()[:3]
+        books = obj.read_later_books.all()[:2]
         return BookSerializer(books, many=True).data
 
 
