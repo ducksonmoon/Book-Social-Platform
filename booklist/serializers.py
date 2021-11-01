@@ -1,15 +1,16 @@
 from rest_framework import serializers
-from core.models import BookList, Book
 
+from core.models import BookList, Book
+from book.serializers import MinBookSerializer
 
 class BookListSerializer(serializers.ModelSerializer):
     """Serializer for BookList objects"""
     user = serializers.ReadOnlyField(source='user.username')
-    books = serializers.PrimaryKeyRelatedField(many=True, queryset=Book.objects.all())
-    books_title = serializers.SerializerMethodField()
-    def get_books_title(self, obj):
-        """Returns a list of book titles"""
-        return [book.title for book in obj.books.all()]
+    books = serializers.SerializerMethodField()
+    def get_books(self, obj):
+        """Get books from BookList"""
+        return MinBookSerializer(obj.books.all(), many=True).data
+    # books = serializers.PrimaryKeyRelatedField(many=True, queryset=Book.objects.all())
 
     class Meta:
         model = BookList
