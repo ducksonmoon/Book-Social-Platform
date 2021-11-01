@@ -16,7 +16,7 @@ from book.paginations import SmallPagesPagination
 from book import permissions as book_permissions
 from book import serializers
 from core.models import Book, UserProfile, Readers, Review, Liked
-from book.serializers import BookSerializer, ReviewSerializer, ReviewDetailSerializer
+from book.serializers import BookSerializer, ReviewSerializer, ReviewDetailSerializer, MinBookSerializer
 from accounts.serializers import ProfileSerializer, UserForBookSerializer
 
 
@@ -199,7 +199,7 @@ class SearchViewSet(generics.ListAPIView):
         query = request.GET.get('search')
         if query:
             books = Book.objects.filter(title__icontains=query)[:10]
-            serializer = BookSerializer(books, many=True)
+            serializer = MinBookSerializer(books, many=True)
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'درخواست نامعتبر است'})
