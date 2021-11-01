@@ -128,4 +128,4 @@ class MinBookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = ('id', 'title', 'cover', 'slug')
+        fields = ('id', 'title', 'rate', 'cover', 'slug')
