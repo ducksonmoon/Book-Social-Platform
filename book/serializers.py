@@ -74,7 +74,8 @@ class BookSerializer(serializers.ModelSerializer):
         fields = (
             'id', 
             'url',
-            'title', 
+            'title',
+            'slug', 
             'authors', 
             'translators', 
             'publisher', 
