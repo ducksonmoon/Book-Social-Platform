@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from core.models import UserProfile, BookList
-from book.serializers import BookSerializer
+from book.serializers import BookSerializer, MinBookSerializer
 from booklist.serializers import BookListSerializer
 from accounts.functions import is_following
 
@@ -44,17 +44,17 @@ class ProfileSerializer(serializers.ModelSerializer):
     last_books_readed = serializers.SerializerMethodField()
     def get_last_books_readed(self, obj):
         books = obj.readed_books.all()[:2]
-        return BookSerializer(books, many=True).data
+        return MinBookSerializer(books, many=True).data
 
     last_books_liked = serializers.SerializerMethodField()
     def get_last_books_liked(self, obj):
         books = obj.liked_books.all()[:2]
-        return BookSerializer(books, many=True).data
+        return MinBookSerializer(books, many=True).data
     
     favorit_books = serializers.SerializerMethodField()
     def get_favorit_books(self, obj):
         books = obj.favorite_books.all()
-        return BookSerializer(books, many=True).data
+        return MinBookSerializer(books, many=True).data
 
     last_created_lists = serializers.SerializerMethodField()
     def get_last_created_lists(self, obj):
@@ -64,7 +64,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     last_read_later_books = serializers.SerializerMethodField()
     def get_last_read_later_books(self, obj):
         books = obj.read_later_books.all()[:2]
-        return BookSerializer(books, many=True).data
+        return MinBookSerializer(books, many=True).data
 
 
     class Meta:
