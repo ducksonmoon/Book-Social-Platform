@@ -17,6 +17,8 @@ from book import permissions as book_permissions
 from book import serializers
 from core.models import Book, UserProfile, Readers, Review, Liked
 from book.serializers import BookSerializer, ReviewSerializer, ReviewDetailSerializer
+from accounts.serializers import ProfileSerializer, UserForBookSerializer
+
 
 class BookViewSet(APIView):
     """
@@ -201,3 +203,26 @@ class SearchViewSet(generics.ListAPIView):
             return Response(serializer.data)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'درخواست نامعتبر است'})
+
+
+class ReadersOfBook(generics.ListAPIView):
+    """
+    API endpoint that list readers of a book.
+    """
+    serializer_class = UserForBookSerializer
+    permission_classes = (book_permissions.IsAuthenticatedOrReadOnly,)
+    authentication_classes = (TokenAuthentication,)
+    queryset = User.objects.all()
+    pagination_class = SmallPagesPagination
+    ALLOWED_METHODS = ('GET',)
+
+    def get(self, request, slug):
+        # Return all readers of a book
+        book = get_object_or_404(Book, slug=slug)
+        readers = book.user_readers.all()
+        serializer = UserForBookSerializer(readers, many=True, context={'book': book})
+        # paginate
+        page = self.paginate_queryset(readers)
+        if page is not None:
+            serializer = UserForBookSerializer(page, many=True, context={'book': book})
+            return self.get_paginated_response(serializer.data)

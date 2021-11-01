@@ -150,6 +150,13 @@ class UserProfile(models.Model):
             book.reviews.remove(review)
             return True
         return False
+    
+    def rate_of_book(self, book):
+        if book in Book.objects.all():
+            rate = PersonRate.objects.filter(user=self.user, book=book)
+            if rate:
+                return rate[0].person_rate
+            return 0
 
     def save(self, *args, **kwargs):
         super(UserProfile, self).save(*args, **kwargs)
