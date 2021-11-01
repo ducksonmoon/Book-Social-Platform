@@ -6,9 +6,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import status
+from django.utils.translation import gettext as _
+from django.contrib.auth.models import User
 
 from core.models import UserProfile
-from django.contrib.auth.models import User
+from book.serializers import MinBookSerializer
+from book.paginations import SmallPagesPagination
 
 
 class ProfileView(generics.RetrieveAPIView):
@@ -55,3 +58,42 @@ class ProfileView(generics.RetrieveAPIView):
 
         else:
             return Response(status=status.HTTP_404_NOT_FOUND, data={'message': 'User {} does not exist'.format(username)})
+
+
+class ProfileBookListView(APIView):
+    serializer_class = MinBookSerializer
+    pagination_class = SmallPagesPagination
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get_queryset(self, username, list):
+        try:
+            user = User.objects.get(username=username)
+            profile = UserProfile.objects.get(user=user)
+            kind_list = ['liked_books', 'readed_books', 'favorite_books', 'read_later_books', 'rated_books',]
+            list_choice = {
+                'liked': 'liked_books',
+                'reads': 'readed_books',
+                'favorites': 'favorite_books',
+                'read-later': 'read_later_books',
+            }
+            if list in list_choice.keys():
+                getter = getattr(profile, list_choice[list])
+                return getter.all()
+            return None
+        except User.DoesNotExist:
+            return None
+
+    def get(self, request, username=None, list='reads'):
+        if username is None:
+            username = request.user.username
+        books = self.get_queryset(username, list)
+
+        if books:
+            paginator = self.pagination_class()
+            serializer = self.serializer_class(books, many=True)
+            page = paginator.paginate_queryset(serializer.data, request)
+            return paginator.get_paginated_response(serializer.data)
+        else:
+            msg = "هیچ کتابی پیدا نشد"
+            return Response(status=status.HTTP_404_NOT_FOUND, data={'message': msg})

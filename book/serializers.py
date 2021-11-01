@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers
 
-from core.models import Book, Author, Publisher, User, Review
+from core.models import Book, Author, Publisher, Review
 
 
 
@@ -117,3 +117,15 @@ class ReviewDetailSerializer(serializers.ModelSerializer):
         instance.text = validated_data.get('text', instance.text)
         instance.save()
         return instance
+
+
+class MinBookSerializer(serializers.ModelSerializer):
+    """Min Book Serializer is Book Serializer with less fields."""
+    cover = serializers.SerializerMethodField()
+    def get_cover(self, obj):
+        base_url = settings.BASE_URL
+        return base_url + obj.cover.url
+
+    class Meta:
+        model = Book
+        fields = ('id', 'title', 'cover', 'slug')
