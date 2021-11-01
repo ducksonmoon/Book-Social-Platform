@@ -7,6 +7,7 @@ from book.serializers import MinBookSerializer
 class BookListSerializer(serializers.ModelSerializer):
     """Serializer for BookList objects"""
     user = serializers.ReadOnlyField(source='user.username')
+    user_name = serializers.ReadOnlyField(source='user.userprofile.name')
     user_avatar = serializers.SerializerMethodField()
     def get_user_avatar(self, obj):
         base_url = settings.BASE_URL
