@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.conf import settings
 
 from core.models import BookList, Book
 from book.serializers import MinBookSerializer
@@ -6,6 +7,11 @@ from book.serializers import MinBookSerializer
 class BookListSerializer(serializers.ModelSerializer):
     """Serializer for BookList objects"""
     user = serializers.ReadOnlyField(source='user.username')
+    user_avatar = serializers.SerializerMethodField()
+    def get_user_avatar(self, obj):
+        base_url = settings.BASE_URL
+        return base_url + obj.user.userprofile.avatar.url
+
     books = serializers.SerializerMethodField()
     def get_books(self, obj):
         """Get books from BookList"""
