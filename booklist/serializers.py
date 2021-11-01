@@ -13,7 +13,7 @@ class BookListSerializer(serializers.ModelSerializer):
     # books = serializers.PrimaryKeyRelatedField(many=True, queryset=Book.objects.all())
     
     # Show date_created field as Y.M.D
-    date_created = serializers.DateTimeField(format="%Y.%m.%d")
+    date_created = serializers.DateTimeField(format="%Y.%m.%d", read_only=True)
     class Meta:
         model = BookList
         fields = '__all__'
