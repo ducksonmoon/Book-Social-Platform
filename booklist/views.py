@@ -72,8 +72,6 @@ class MainBookListView(generics.RetrieveAPIView):
     """
     queryset = BookList.objects.all()
     serializer_class = BookListSerializer
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (TokenAuthentication,)
 
     def get_object(self):
         queryset = self.get_queryset()
