@@ -3,6 +3,7 @@ from core.models import *
 
 admin.site.register(UserProfile)
 admin.site.register(Author)
+admin.site.register(BookList)
 admin.site.register(Publisher)
 admin.site.register(Translator)
 admin.site.register(Review)
