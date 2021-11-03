@@ -102,8 +102,9 @@ class AuthTokenSerializer(serializers.Serializer):
 
 class ManageUserSerializer(serializers.ModelSerializer):
     """Serializer for manage user profile"""
-    username = serializers.CharField(source='user.username')
-    email = serializers.CharField(source='user.email')
+    name = serializers.CharField(source='user.userprofile.name', required=False)
+    username = serializers.CharField(source='user.username', required=False)
+    email = serializers.CharField(source='user.email', required=False)
 
     class Meta:
         model = UserProfile
@@ -115,19 +116,21 @@ class ManageUserSerializer(serializers.ModelSerializer):
         user = data.get('user')
         if user:
             username = user.get('username')
-            if not validate_username(username):
-                raise ValidationError('Username is invalid.')
-            if User.objects.filter(username=username).exclude(pk=user.get('id')).exists() and\
-                    not self.instance.user.username == username:
-                raise ValidationError('Username is already taken.')
+            if username:
+                if not validate_username(username):
+                    raise ValidationError('Username is invalid.')
+                if User.objects.filter(username=username).exclude(pk=user.get('id')).exists() and\
+                        not self.instance.user.username == username:
+                    raise ValidationError('Username is already taken.')
 
             # Validate email
             email = user.get('email')
-            if not validate_email(email):
-                raise ValidationError('Email is invalid.')
-            if User.objects.filter(email=email).exclude(pk=user.get('id')).exists() and\
-                    not self.instance.user.email == email:
-                raise ValidationError('Email is already taken.')
+            if email:
+                if not validate_email(email):
+                    raise ValidationError('Email is invalid.')
+                if User.objects.filter(email=email).exclude(pk=user.get('id')).exists() and\
+                        not self.instance.user.email == email:
+                    raise ValidationError('Email is already taken.')
 
 
         # Validate avatar file
@@ -142,13 +145,15 @@ class ManageUserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Update user profile"""
         user_data = validated_data.pop('user', None)
-        instance.name = validated_data.get('name', instance.name)
         instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.social_media_link = validated_data.get('social_media_link', instance.social_media_link)
         instance.birth_date = validated_data.get('birth_date', instance.birth_date)
         if user_data:
             instance.user.username = user_data.get('username', instance.user.username)
             instance.user.email = user_data.get('email', instance.user.email)            
+            user_data = user_data.get('userprofile', None)
+            if user_data:
+                instance.name = user_data.get('name', instance.name)
             instance.user.save()
         instance.save()
 
