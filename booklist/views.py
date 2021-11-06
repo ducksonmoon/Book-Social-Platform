@@ -52,6 +52,9 @@ class BookListAddBookView(APIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
+    def get_queryset(self):
+        return Book.objects.filter(booklist=self.kwargs['book_list_id'])
+
     def get(self, request, slug, format=None):
         # Search book
         query = request.GET.get('search')
@@ -61,8 +64,15 @@ class BookListAddBookView(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'درخواست نامعتبر است'})
 
-    def get_queryset(self):
-        return Book.objects.filter(booklist=self.kwargs['book_list_id'])
+    def post(self, request, slug, format=None):
+        book_list = get_object_or_404(BookList, slug=slug)
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            print(serializer.validated_data.get('book_id'))
+            book = get_object_or_404(Book, pk=serializer.validated_data['book_id'])
+            book_list.books.add(book)
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
 
 
 class MainBookListView(generics.RetrieveAPIView):
