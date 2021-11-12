@@ -8,7 +8,11 @@ from core.models import Book, Author, Publisher, Review
 class ReviewSerializer(serializers.ModelSerializer):
     book = serializers.CharField(source='book.title', read_only=True)
     user = serializers.CharField(source='user.username', read_only=True)
-    avatar = serializers.ImageField(source='user.userprofile.avatar', read_only=True)
+    avatar = serializers.SerializerMethodField()
+    def get_avatar(self, obj):  
+        base_url = settings.BASE_URL
+        return base_url + obj.user.userprofile.avatar.url
+
     date_created = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
 
     class Meta:
