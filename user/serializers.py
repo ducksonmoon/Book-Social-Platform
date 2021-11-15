@@ -105,7 +105,6 @@ class ManageUserSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='user.userprofile.name', required=False)
     username = serializers.CharField(source='user.username', required=False)
     email = serializers.CharField(source='user.email', required=False)
-
     class Meta:
         model = UserProfile
         fields = ('id', 'name', 'username', 'email', 'birth_date', 'avatar', 'social_media_link')
@@ -145,7 +144,8 @@ class ManageUserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Update user profile"""
         user_data = validated_data.pop('user', None)
-        instance.avatar = validated_data.get('avatar', instance.avatar)
+        if validated_data.get('avatar') != None:
+            instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.social_media_link = validated_data.get('social_media_link', instance.social_media_link)
         instance.birth_date = validated_data.get('birth_date', instance.birth_date)
         if user_data:
