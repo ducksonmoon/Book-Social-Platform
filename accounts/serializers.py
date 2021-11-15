@@ -59,6 +59,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     last_created_lists = serializers.SerializerMethodField()
     def get_last_created_lists(self, obj):
         created_lists = BookList.objects.filter(user=obj.user)[:2]
+        # remove empty lists from created_lists
+        created_lists = [x for x in created_lists if x.books.count() > 0]
         return BookListSerializer(created_lists, many=True).data
 
     last_read_later_books = serializers.SerializerMethodField()
