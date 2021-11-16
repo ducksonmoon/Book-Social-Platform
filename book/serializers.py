@@ -12,6 +12,16 @@ class ReviewSerializer(serializers.ModelSerializer):
     def get_avatar(self, obj):  
         base_url = settings.BASE_URL
         return base_url + obj.user.userprofile.avatar.url
+    
+    rate_to_book = serializers.SerializerMethodField()
+    def get_rate_to_book(self, obj):
+
+        user = obj.user
+        book = obj.book
+        try:
+            return user.userprofile.rate_of_book(book)
+        except:
+            return None
 
     date_created = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
 
@@ -24,6 +34,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             'book', 
             'date_created', 
             'text',
+            'rate_to_book',
         )
         read_only_fields = ('user', 'book', 'date_created', 'avatar')
 
@@ -57,7 +68,7 @@ class BookSerializer(serializers.ModelSerializer):
                     u = {
                         'username': user.username,
                         'avatar': base_url + user.userprofile.avatar.url,
-                        'rate': 0,
+                        'rate': 0.0,
                     }
                     # TODO: Add this to the userprofile
                     # if user.userprofile.rate_to_book(obj):
