@@ -5,13 +5,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-from rest_framework import status
+from rest_framework import status, viewsets
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 
-from core.models import UserProfile
+from core.models import UserProfile, BookList
 from book.serializers import MinBookSerializer
 from book.paginations import SmallPagesPagination
+
+from booklist.serializers import BookListSerializer
 
 
 class ProfileView(generics.RetrieveAPIView):
@@ -97,3 +99,21 @@ class ProfileBookListView(APIView):
         else:
             msg = "هیچ کتابی پیدا نشد"
             return Response(status=status.HTTP_404_NOT_FOUND, data={'message': msg})
+
+
+class BookListViewSet(viewsets.ModelViewSet):
+    queryset = BookList.objects.all()
+    pagination_class = SmallPagesPagination
+    serializer_class = BookListSerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get_queryset(self):
+        try:
+            # get username slug from url
+            username = self.kwargs['username']
+            user = User.objects.get(username=username)
+            qs = [x for x in BookList.objects.filter(user=user) if x.books.count() > 0]
+            return qs
+        except User.DoesNotExist:
+            return None
