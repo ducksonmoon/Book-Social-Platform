@@ -149,8 +149,7 @@ class InvitationView(generics.ListAPIView):
         """
         qs = self.get_queryset()
         serializer = self.get_serializer(qs, many=True)
-        return Response({'status': 'success', 'code': status.HTTP_200_OK, 'message': 'Invitations retrieved successfully.',
-                         'invitations': serializer.data}, status=status.HTTP_200_OK)
+        return Response({'invitations': serializer.data}, status=status.HTTP_200_OK)
 
 
 # Enter invitation code to activate account
@@ -172,11 +171,9 @@ class InvitationCodeView(generics.GenericAPIView):
         try:
             invitation = Invitation.objects.get(code=code)
         except Invitation.DoesNotExist:
-            return Response({'status': 'fail', 'code': status.HTTP_400_BAD_REQUEST, 'message': 'Invitation code does not exist.'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'کد دعوت نا معتبر است'}, status=status.HTTP_400_BAD_REQUEST)
         if not invitation.is_active:
-            return Response({'status': 'fail', 'code': status.HTTP_400_BAD_REQUEST, 'message': 'Invitation code has already been used.'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'کد دعوت استفاده شده است'}, status=status.HTTP_400_BAD_REQUEST)
         invitation.is_active = False
         invitation.receiver = request.user
         request.user.userprofile.is_invited = True
@@ -186,5 +183,4 @@ class InvitationCodeView(generics.GenericAPIView):
         for _ in range(3):
             Invitation.objects.create(sender=request.user)
 
-        return Response({'status': 'success', 'code': status.HTTP_200_OK, 'message': 'Invitation code activated successfully.'},
-                        status=status.HTTP_200_OK)
+        return Response({'message': 'Invitation code activated successfully.'}, status=status.HTTP_200_OK)
