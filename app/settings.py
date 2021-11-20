@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'booklist.apps.BooklistConfig',
     'info.apps.InfoConfig',
     'accounts.apps.AccountsConfig',
+    'web.apps.WebConfig',
     # Third-parties:
     'drf_yasg',
     'corsheaders',

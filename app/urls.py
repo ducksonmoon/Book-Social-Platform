@@ -51,6 +51,7 @@ urlpatterns = [
     path('list/', include('booklist.urls')),
     path('info/', include('info.urls')),
     path('accounts/', include('accounts.urls')),
+    path('webapp/', include('web.urls')),
 ]
 
 if settings.DEBUG:
