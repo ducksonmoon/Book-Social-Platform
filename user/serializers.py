@@ -93,7 +93,7 @@ class AuthTokenSerializer(serializers.Serializer):
             password=password
         )
         if not user:
-            msg = 'Unable to authenticate with provided credentials'
+            msg = 'نام کاربری یا کلمه عبور اشتباه است'
             raise serializers.ValidationError(msg, code='authentication')
 
         attrs['user'] = user
