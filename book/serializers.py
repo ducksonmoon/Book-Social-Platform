@@ -140,7 +140,10 @@ class MinBookSerializer(serializers.ModelSerializer):
     cover = serializers.SerializerMethodField()
     def get_cover(self, obj):
         base_url = settings.BASE_URL
-        return base_url + obj.cover.url
+        try:
+            return base_url + obj.cover.url
+        except:
+            return None
 
     class Meta:
         model = Book
