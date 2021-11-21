@@ -73,7 +73,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = (
             'id', 'username', 'name', 'birth_date', 'avatar', 'social_media_link',
-            'is_following',
+            'is_following', 'is_invited',
             'number_of_favorits', 'number_of_likes', 'number_of_reads', 'number_of_followings', 'number_of_read_later_books',
             'last_books_readed', 'last_books_liked', 'favorit_books', 'last_created_lists', 'last_read_later_books'
         )
