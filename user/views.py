@@ -17,6 +17,30 @@ class CreateUserView(generics.CreateAPIView):
     """Create a new user in the system"""
     serializer_class = UserSerializer
 
+    # change error messages
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid()
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            errors = []
+            for key, value in serializer.errors.items():
+                msg = str(value[0])
+                if msg == 'A user with that username already exists.':
+                    msg = 'نام کابری ثبت شده.'
+                elif msg == 'Enter a valid email address.':
+                    msg = 'ایمیل معتبر نیست'
+                elif msg == 'Ensure this field has at least 5 characters.':
+                    msg = 'مطمئن شوید پسورد حداقل ۵ حرف باشد'
+                
+                errors.append(msg)
+
+            msg = {'error': '\n'.join(errors)}
+            print(msg)
+            return Response(msg, status=status.HTTP_400_BAD_REQUEST)
+
 
 class CreateTokenView(ObtainAuthToken):
     """Create a new auth token for user"""
