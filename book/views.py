@@ -178,9 +178,9 @@ class ReviewDetailViewSet(APIView):
             error_dict = {
                 'error': _('You can only delete your own comment')
             }
-            raise ValidationError(error_dict)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'درخواست نامعتبر'})
         review.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT, data={"message": "حذف شد"})
+        return Response(status=status.HTTP_200_OK, data={'message': 'دیدگاه حذف شد'})
 
 
 class SearchViewSet(generics.ListAPIView):
