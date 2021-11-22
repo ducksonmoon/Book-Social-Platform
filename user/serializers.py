@@ -46,6 +46,11 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Create a new user with encrypted password and return it. """
         data = validated_data.pop('userprofile', None)
+        # make username lower case
+        validated_data['username'] = validated_data['username'].lower()
+        # make email lower case
+        validated_data['email'] = validated_data['email'].lower()
+        # create user
         user = User.objects.create_user(**validated_data)
         if data:
             userprofile = UserProfile.objects.create(user=user, name=data['name'])
