@@ -188,8 +188,8 @@ class InvitationCodeView(generics.GenericAPIView):
         """
         Activate account with invitation code.
         """
-        if request.user.is_invited:
-            return Response({'code': status.HTTP_400_BAD_REQUEST, 'error': 'Account already active.'})
+        if request.user.userprofile.is_invited:
+            return Response({'code': status.HTTP_400_BAD_REQUEST, 'error': 'اکانت فعال است'})
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         code = serializer.validated_data['code']
@@ -209,4 +209,4 @@ class InvitationCodeView(generics.GenericAPIView):
         for _ in range(3):
             Invitation.objects.create(sender=request.user)
 
-        return Response({'message': 'Invitation code activated successfully.'}, status=status.HTTP_200_OK)
+        return Response({'message': 'کد دعوت تایید شد'}, status=status.HTTP_200_OK)
