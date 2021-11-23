@@ -6,11 +6,13 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.urls import reverse
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from PIL import Image
 import random
 import string
-
+from io import BytesIO
+import sys
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -354,6 +356,16 @@ class Book(models.Model):
             # Rename image to random name
             name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12)) + '.' + self.cover.name.split('.')[-1]
             # check not exist cover name
+            im = Image.open(self.cover)
+            output = BytesIO()
+            # Resize/modify the image to book cover size
+            im.thumbnail((1200, 300), Image.ANTIALIAS)
+            im.convert('RGB').save(output, format='JPEG', quality=100)
+            output.seek(0)
+            # change the imagefield value to be the newley modifed image value
+            self.cover = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.cover.name.split('.')[0], 'image/jpeg',
+                                            sys.getsizeof(output), None)
+
             while Book.objects.filter(cover=name).exists():
                 name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(22)) + '.' + self.cover.name.split('.')[-1]
             self.cover.name = name
