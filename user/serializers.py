@@ -154,6 +154,8 @@ class ManageUserSerializer(serializers.ModelSerializer):
             instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.social_media_link = validated_data.get('social_media_link', instance.social_media_link)
         instance.birth_date = validated_data.get('birth_date', instance.birth_date)
+        if instance.birth_date == '':
+            instance.birth_date = None
         if user_data:
             instance.user.username = user_data.get('username', instance.user.username)
             instance.user.email = user_data.get('email', instance.user.email)            
