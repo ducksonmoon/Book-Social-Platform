@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 def report(
     owner: User,
     review: Review = None,
-    userprofile: UserProfile = None
+    profile: UserProfile = None
     ):
     """
     Report a review.
@@ -13,6 +13,6 @@ def report(
     report, created = Report.objects.get_or_create(
         owner=owner,
         review=review,
-        profile=userprofile
+        profile=profile
     )
     return report

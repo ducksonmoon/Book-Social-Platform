@@ -12,8 +12,8 @@ from django.contrib.auth.models import User
 from core.models import UserProfile, BookList
 from book.serializers import MinBookSerializer
 from book.paginations import SmallPagesPagination
-
 from booklist.serializers import BookListSerializer
+from utils.functions import report
 
 
 class ProfileView(generics.RetrieveAPIView):
@@ -40,7 +40,6 @@ class ProfileView(generics.RetrieveAPIView):
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-
     def post(self, request, username=None):
         """ Follow and unfollow a user """
 
@@ -55,6 +54,9 @@ class ProfileView(generics.RetrieveAPIView):
             elif request.data['action'] == 'unfollow':
                 user.unfollow(profile)
                 return Response(status=status.HTTP_200_OK, data={'message': 'You are no longer following {}'.format(username)})
+            elif request.data['action'] == 'report':
+                report(owner=request.user, profile=profile)
+                return Response(status=status.HTTP_200_OK, data={'message': 'گزارش شما فرستاده شد'})
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
