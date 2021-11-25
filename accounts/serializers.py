@@ -113,9 +113,10 @@ class MiniProfileSerializer(serializers.ModelSerializer):
     Serializer for UserProfile model
     """
     username = serializers.CharField()
-    followings = serializers.SerializerMethodField()
-    def get_followings(self, obj):
-        return obj.userprofile.following.all().count()
+    readed_books = serializers.SerializerMethodField()
+    def get_readed_books(self, obj):
+        print(obj.userprofile.readed_books.all().count())
+        return obj.userprofile.readed_books.all().count()
 
     avatar = serializers.SerializerMethodField()
     def get_avatar(self, obj):
@@ -124,6 +125,6 @@ class MiniProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = (
-            'id', 'username', 'avatar', 'followings',
+            'id', 'username', 'avatar', 'readed_books',
         )
         read_only_fields = ('id', 'username',)
