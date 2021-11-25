@@ -444,3 +444,23 @@ class About(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Report(models.Model):
+    """
+    Report page or review.
+    """
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, blank=True, null=True)
+    profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, blank=True, null=True)
+    date_created = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        # if review is not null, return review title
+        if self.review:
+            return f'review by: user'
+        # if profile is not null, return profile username
+        if self.profile:
+            return self.profile.user.username
+        return 'Report'

@@ -18,7 +18,7 @@ from book import serializers
 from core.models import Book, UserProfile, Readers, Review, Liked
 from book.serializers import BookSerializer, ReviewSerializer, ReviewDetailSerializer, MinBookSerializer
 from accounts.serializers import ProfileSerializer, UserForBookSerializer
-
+from utils.functions import report_review
 
 class BookViewSet(APIView):
     """
@@ -156,6 +156,16 @@ class ReviewDetailViewSet(APIView):
         review = get_object_or_404(Review, pk=pk)
         serializer = ReviewDetailSerializer(review)
         return Response(serializer.data)
+
+    def post(self, request, slug, pk):
+        action = request.POST.get("action")
+        if action == 'report':
+            review = get_object_or_404(Review, pk=pk)
+            user = request.user
+            report_review(owner=user, review=review)
+            return Response(status=status.HTTP_200_OK, data={"message": "انجام شد"})
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'Invalid action'})
 
     def put(self, request, slug, pk):
         # Update a comment
