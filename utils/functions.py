@@ -2,7 +2,7 @@ from core.models import Report, UserProfile, Review
 from django.contrib.auth.models import User
 
 
-def report_review(
+def report(
     owner: User,
     review: Review = None,
     userprofile: UserProfile = None
