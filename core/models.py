@@ -164,12 +164,23 @@ class UserProfile(models.Model):
         super(UserProfile, self).save(*args, **kwargs)
         # Resize the image to a square
         if self.avatar:
+            # resize the image to a square 300x300 pixels
+            img = Image.open(self.avatar)
+            if img.height > img.width:
+                diff = img.height - img.width
+                img = img.crop((0, diff // 2, img.width, img.height - diff // 2))
+            elif img.height < img.width:
+                diff = img.width - img.height
+                img = img.crop((diff // 2, 0, img.width - diff // 2, img.height))
+            img.thumbnail((300, 300))
+            img.save(self.avatar.path)
+            """
             img = Image.open(self.avatar)
             if img.height > 300 or img.width > 300:
                 output_size = (300, 300)
                 img.thumbnail(output_size)
                 img.save(self.avatar.path)
-
+            """
     def __str__(self):
         return self.user.username
 
