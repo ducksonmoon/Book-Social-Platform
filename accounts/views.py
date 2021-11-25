@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import status, viewsets
+from rest_framework import filters
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import User
 
@@ -13,6 +14,7 @@ from book.serializers import MinBookSerializer
 from book.paginations import SmallPagesPagination
 from booklist.serializers import BookListSerializer
 from accounts.serializers import ProfileSerializer, MiniProfileSerializer
+from book import permissions as book_permissions
 from utils.functions import report
 
 
@@ -137,3 +139,32 @@ class ProfileFollowingsView(viewsets.ModelViewSet):
         except:
             return None
     
+
+class SearchViewSet(generics.ListAPIView):
+    """
+    API endpoint that list Search results.
+    """
+    queryset = User.objects.all()
+    permission_classes = (book_permissions.IsAuthenticatedOrReadOnly,)
+    authentication_classes = (TokenAuthentication,)
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
+    Method_Allowed = ['GET']
+
+    def get(self, request):
+        query = request.GET.get('search')
+        if query:
+            users = User.objects.filter(username__icontains=query.lower())[:10]
+            user_r = []
+            for user in users:
+                try:
+                    user.userprofile
+                    user_r.append(user)
+                except:
+                    continue
+
+            serializer = MiniProfileSerializer(user_r, many=True)
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'درخواست نامعتبر است'})
+        
