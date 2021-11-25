@@ -106,3 +106,24 @@ class UserForBookSerializer(serializers.ModelSerializer):
             'id', 'username', 'name', 'avatar', 'rate_to_book',
         )
         read_only_fields = ('id', 'username',)
+
+
+class MiniProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for UserProfile model
+    """
+    username = serializers.CharField()
+    followings = serializers.SerializerMethodField()
+    def get_followings(self, obj):
+        return obj.userprofile.following.all().count()
+
+    avatar = serializers.SerializerMethodField()
+    def get_avatar(self, obj):
+        return settings.BASE_URL + obj.userprofile.avatar.url
+
+    class Meta:
+        model = UserProfile
+        fields = (
+            'id', 'username', 'avatar', 'followings',
+        )
+        read_only_fields = ('id', 'username',)

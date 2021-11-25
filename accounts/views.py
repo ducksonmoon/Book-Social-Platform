@@ -1,4 +1,3 @@
-from accounts.serializers import ProfileSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -13,6 +12,7 @@ from core.models import UserProfile, BookList
 from book.serializers import MinBookSerializer
 from book.paginations import SmallPagesPagination
 from booklist.serializers import BookListSerializer
+from accounts.serializers import ProfileSerializer, MiniProfileSerializer
 from utils.functions import report
 
 
@@ -119,3 +119,21 @@ class BookListViewSet(viewsets.ModelViewSet):
             return qs
         except User.DoesNotExist:
             return None
+
+
+class ProfileFollowingsView(viewsets.ModelViewSet):
+    serializer_class = MiniProfileSerializer
+    permission_classes = (IsAuthenticated,)
+    pagination_class = SmallPagesPagination
+    authentication_classes = (TokenAuthentication,)
+
+    def get_queryset(self):
+        try:
+            username = self.kwargs['username']
+            user = User.objects.get(username=username)
+            profile = UserProfile.objects.get(user=user)
+            followings = profile.following.all()
+            return followings
+        except:
+            return None
+    
