@@ -111,8 +111,8 @@ class UserProfile(models.Model):
     def rate_book(self, book, rate):
         if (book in Book.objects.all()) and 0<=rate<=5:
             self_rate = PersonRate.objects.filter(user=self.user, book=book)
-            if self_rate:
-                self_rate.update(person_rate=rate)
+            if self_rate.exists():
+                self_rate.first().person_rate = rate
             else:
                 obj = PersonRate.objects.create(user=self.user, book=book, person_rate=rate)
                 self.rated_books.add(obj)
