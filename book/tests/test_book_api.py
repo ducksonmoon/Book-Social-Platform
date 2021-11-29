@@ -51,3 +51,22 @@ class BookAPIPublic(TestCase):
         friend_profile.rate_book(self.book, 4)
         response = self.client.get(url)
         self.assertEqual(response.data['three_friends'][0]['rate'], 4)
+
+    def test_user_rate(self):
+        """Test user rate in book detail page"""
+        url = reverse('book:book_detail', kwargs={'slug': self.book.slug})
+        # autheticate me as user
+        self.client.force_authenticate(user=User.objects.create_user(
+            username='test',
+        ))
+        self.user = User.objects.get(username='test')
+        self.user_profile = UserProfile.objects.create(user=self.user)
+        self.user_profile.save()
+
+        self.user_profile.rate_book(self.book, 5)
+        response = self.client.get(url)
+        self.assertEqual(response.data['rate'], 5)
+
+        self.user_profile.rate_book(self.book, 3)
+        response = self.client.get(url)
+        self.assertEqual(response.data['rate'], 3)

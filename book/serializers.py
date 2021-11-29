@@ -43,6 +43,7 @@ class BookSerializer(serializers.ModelSerializer):
 
     url = serializers.CharField(source='get_absolute_url', read_only=True)
     publisher = serializers.CharField(source='publisher.name')
+
     authors = serializers.SerializerMethodField()
     def get_authors(self, obj):
         return [author.name for author in obj.authors.all()]
@@ -81,6 +82,17 @@ class BookSerializer(serializers.ModelSerializer):
     def get_cover(self, obj):
         base_url = settings.BASE_URL
         return base_url + obj.cover.url
+
+    rate = serializers.SerializerMethodField()
+    def get_rate(self, obj):
+        try:
+            user = self.context['request'].user
+            if user.is_authenticated:
+                rate = PersonRate.objects.get(user=user, book=obj).person_rate
+                return rate
+        except:
+            pass
+        return 0
 
     class Meta:
         model = Book
