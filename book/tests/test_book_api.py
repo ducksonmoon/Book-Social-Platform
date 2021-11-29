@@ -70,3 +70,6 @@ class BookAPIPublic(TestCase):
         self.user_profile.rate_book(self.book, 3)
         response = self.client.get(url)
         self.assertEqual(response.data['rate'], 3)
+
+    def test_book_rate_reads(self):
+        pass

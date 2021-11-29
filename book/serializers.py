@@ -155,6 +155,16 @@ class MinBookSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    rate = serializers.SerializerMethodField()
+    def get_rate(self, obj):
+        try:
+            user = self.context['request'].user
+            rate = PersonRate.objects.get(user=user, book=obj).person_rate
+            return float(rate)
+        except:
+            pass
+        return 0.0
+
     class Meta:
         model = Book
         fields = ('id', 'title', 'rate', 'cover', 'slug')
