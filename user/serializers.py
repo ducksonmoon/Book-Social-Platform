@@ -29,6 +29,8 @@ class UserSerializer(serializers.ModelSerializer):
         """
         if not validate_username(value):
             raise ValidationError('نام کاربری معتبر نیست')
+        elif User.objects.filter(username=value.lower()).exists():
+            raise ValidationError('نام کاربری قبلا ثبت شده است')
         return value
 
     def validate_email(self, value):
@@ -39,7 +41,7 @@ class UserSerializer(serializers.ModelSerializer):
         """
         if not validate_email(value):
             raise ValidationError('ایمیل معتبر نیست')
-        elif User.objects.filter(email=value).exists():
+        elif User.objects.filter(email=value.lower()).exists():
             raise ValidationError('ایمیل قبلا ثبت شده است')
         return value
 
