@@ -6,8 +6,11 @@ from web.forms import UploadFileForm
 from core.models import Translator, Author, Book, CoverType, Size, Publisher
 
 def upload_file(request):
+    # only authenticated staff users can upload files
+    if not request.user.is_staff:
+        return HttpResponse("You are not authorized to upload files")
 
-    if request.method == 'POST':
+    elif request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
@@ -69,5 +72,8 @@ def upload_file(request):
 
 
 def choose_photos(request):
+    if not request.user.is_staff:
+        return HttpResponse("You are not authorized to upload files")
+
     data = Book.objects.filter(cover='')
     return render(request, 'web/choose_photos.html', {'books': data})
