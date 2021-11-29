@@ -70,7 +70,7 @@ class BookSerializer(serializers.ModelSerializer):
                     u = {
                         'username': user.username,
                         'avatar': base_url + user.userprofile.avatar.url,
-                        'rate': rate,
+                        'rate': float(rate),
                     }
                     result.append(u)
         except:
@@ -89,10 +89,10 @@ class BookSerializer(serializers.ModelSerializer):
             user = self.context['request'].user
             if user.is_authenticated:
                 rate = PersonRate.objects.get(user=user, book=obj).person_rate
-                return rate
+                return float(rate)
         except:
             pass
-        return 0
+        return 0.0
 
     class Meta:
         model = Book
