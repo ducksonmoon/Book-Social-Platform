@@ -71,9 +71,6 @@ class BookSerializer(serializers.ModelSerializer):
                         'avatar': base_url + user.userprofile.avatar.url,
                         'rate': rate,
                     }
-                    # TODO: Add this to the userprofile
-                    # if user.userprofile.rate_to_book(obj):
-                    #     u['rate'] = user.userprofile.rate_to_book(obj)
                     result.append(u)
         except:
             pass
