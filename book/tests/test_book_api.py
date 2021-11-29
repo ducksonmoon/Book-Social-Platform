@@ -45,8 +45,9 @@ class BookAPIPublic(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['three_friends'][0]['username'], friend_user.username)
         self.assertEqual(response.data['three_friends'][0]['rate'], 5)
-        
+
         friend_profile.rate_book(self.book, 4)
         response = self.client.get(url)
         self.assertEqual(response.data['three_friends'][0]['rate'], 4)
