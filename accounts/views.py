@@ -97,7 +97,12 @@ class ProfileBookListView(APIView):
 
         if books:
             paginator = self.pagination_class()
-            serializer = self.serializer_class(books, many=True)
+            # get the requested page username: slug
+            page_user = User.objects.get(username=username)
+            serializer = self.serializer_class(books, many=True, context={
+                'request': self.request,
+                'page_user': page_user,
+            })
             page = paginator.paginate_queryset(serializer.data, request)
             return paginator.get_paginated_response(serializer.data)
         else:

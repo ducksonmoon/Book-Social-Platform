@@ -85,13 +85,6 @@ class BookSerializer(serializers.ModelSerializer):
 
     rate = serializers.SerializerMethodField()
     def get_rate(self, obj):
-        try:
-            user = self.context['request'].user
-            if user.is_authenticated:
-                rate = PersonRate.objects.get(user=user, book=obj).person_rate
-                return float(rate)
-        except:
-            pass
         return 0.0
 
     class Meta:
@@ -158,7 +151,7 @@ class MinBookSerializer(serializers.ModelSerializer):
     rate = serializers.SerializerMethodField()
     def get_rate(self, obj):
         try:
-            user = self.context['request'].user
+            user = self.context['page_user']
             rate = PersonRate.objects.get(user=user, book=obj).person_rate
             return float(rate)
         except:
