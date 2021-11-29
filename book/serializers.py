@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers
 
-from core.models import Book, Author, Publisher, Review
+from core.models import Book, Author, Publisher, Review, PersonRate
 
 
 
@@ -65,10 +65,11 @@ class BookSerializer(serializers.ModelSerializer):
                 res = user.userprofile.related_following_to_book(obj)
                 base_url = settings.BASE_URL
                 for user in res:
+                    rate = PersonRate.objects.get(user=user, book=obj).person_rate
                     u = {
                         'username': user.username,
                         'avatar': base_url + user.userprofile.avatar.url,
-                        'rate': 0.0,
+                        'rate': rate,
                     }
                     # TODO: Add this to the userprofile
                     # if user.userprofile.rate_to_book(obj):
