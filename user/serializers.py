@@ -101,8 +101,7 @@ class AuthTokenSerializer(serializers.Serializer):
         )
         if not user:
             msg = 'نام کاربری یا کلمه عبور اشتباه است'
-            msg = {'error': msg}
-            raise serializers.ValidationError(msg, code='authentication')
+            raise ValidationError(msg, code='authentication')
 
         attrs['user'] = user
         return attrs
