@@ -337,7 +337,7 @@ class Book(models.Model):
     translators = models.ManyToManyField(Translator, related_name='books', blank=True)
     publisher = models.ForeignKey(Publisher, related_name='books', on_delete=models.CASCADE, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    cover = models.ImageField(upload_to='covers/', blank=True, null=True, default='defaults/cover.png')
+    cover = models.ImageField(upload_to='covers/', blank=True, null=True, default='covers/default.png')
     pages = models.IntegerField(default=0, blank=True, null=True)
     isbn = models.CharField(max_length=255, blank=True, null=True)
     size = models.ForeignKey('Size', on_delete=models.SET_NULL, blank=True, null=True)
