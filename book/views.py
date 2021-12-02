@@ -108,7 +108,9 @@ class BookReviewViewSet(generics.ListAPIView):
     serializer_class = ReviewSerializer
     permission_classes = (book_permissions.IsAuthenticatedOrReadOnly,)
     authentication_classes = (TokenAuthentication,)
-    queryset = Review.objects.all()
+    # TODO: is_invited -> Check if user is invited with invitaion code
+    # for further development in future remove this filter
+    queryset = Review.objects.all().filter(user__userprofile__is_invited=True)
     pagination_class = SmallPagesPagination
     ALLOWED_METHODS = ('GET', 'POST')
 
