@@ -40,6 +40,10 @@ class BookListUpdateView(generics.RetrieveUpdateDestroyAPIView):
         obj = get_object_or_404(queryset, slug=self.kwargs['slug'])
         return obj
 
+    def delete(self, request, slug, format=None):
+        book_list = get_object_or_404(BookList, slug=slug).delete()
+        return Response(status=status.HTTP_200_OK, data={'message': 'انجام شد'})
+
 
 # Add specific book to a list
 class BookListAddBookView(APIView):
