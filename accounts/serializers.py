@@ -88,7 +88,10 @@ class UserForBookSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='userprofile.name')
     avatar = serializers.SerializerMethodField()
     def get_avatar(self, obj):
-        return settings.BASE_URL + obj.userprofile.avatar.url
+        try:
+            return settings.BASE_URL + obj.userprofile.avatar.url
+        except:
+            return 'https://api.nebigapp.com/media/defaults/avatar.png'
     
     rate_to_book = serializers.SerializerMethodField()
     def get_rate_to_book(self, obj):
@@ -120,7 +123,10 @@ class MiniProfileSerializer(serializers.ModelSerializer):
 
     avatar = serializers.SerializerMethodField()
     def get_avatar(self, obj):
-        return settings.BASE_URL + obj.userprofile.avatar.url
+        try:
+            return settings.BASE_URL + obj.userprofile.avatar.url
+        except:
+            return 'https://api.nebigapp.com/media/defaults/avatar.png'
 
     class Meta:
         model = UserProfile
