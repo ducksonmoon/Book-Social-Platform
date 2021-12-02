@@ -16,7 +16,7 @@ class BookListSerializer(serializers.ModelSerializer):
     books = serializers.SerializerMethodField()
     def get_books(self, obj):
         """Get books from BookList"""
-        return MinBookSerializer(obj.books.all(), many=True).data
+        return MinBookSerializer(obj.books.all(), many=True).data[::-1]
     # books = serializers.PrimaryKeyRelatedField(many=True, queryset=Book.objects.all())
     
     # Show date_created field as Y.M.D
