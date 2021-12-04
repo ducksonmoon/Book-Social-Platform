@@ -110,6 +110,8 @@ class BookSerializer(serializers.ModelSerializer):
             'pages',
             'description', 
             'cover',
+            'cover_type',
+            'size',
             'rate',
             'user_rate',
             'goodreads_rate',
