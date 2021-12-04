@@ -43,7 +43,9 @@ class BookSerializer(serializers.ModelSerializer):
 
     url = serializers.CharField(source='get_absolute_url', read_only=True)
     publisher = serializers.CharField(source='publisher.name')
-
+    cover_type = serializers.CharField(source='cover_type.name', read_only=True)
+    size = serializers.CharField(source='size.name', read_only=True)
+    
     authors = serializers.SerializerMethodField()
     def get_authors(self, obj):
         return [author.name for author in obj.authors.all()]
