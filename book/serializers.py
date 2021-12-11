@@ -98,6 +98,16 @@ class BookSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    is_readed = serializers.SerializerMethodField()
+    def get_is_readed(self, obj):
+        # Check if book's in readed_books many to many field
+        try:
+            user = self.context['request'].user
+            user.userprofile.readed_books.get(id=obj.id)
+            return True
+        except:
+            return False
+
     class Meta:
         model = Book
         fields = (
@@ -116,6 +126,7 @@ class BookSerializer(serializers.ModelSerializer):
             'size',
             'rate',
             'user_rate',
+            'is_readed',
             'goodreads_rate',
             'three_friends',
             'three_comments',
