@@ -148,7 +148,7 @@ class ManageUserSerializer(serializers.ModelSerializer):
         """Validate user data"""
         # Validate username
         user = data.get('user')
-        userprofile = user.get('userprofile')
+        
         if user:
             username = user.get('username')
             if username:
@@ -165,12 +165,13 @@ class ManageUserSerializer(serializers.ModelSerializer):
                 if User.objects.filter(email=email).exclude(pk=user.get('id')).exists() and\
                         not self.instance.user.email == email:
                     raise ValidationError('Email is already taken.')
-            
-            phone_number = userprofile.get('phone_number')            
-            if phone_number:
-                if UserProfile.objects.filter(phone_number=user.get('phone_number')).exclude(pk=user.get('id')).exists() and\
-                        not self.instance.user.userproile.phone_number == phone_number:
-                    raise ValidationError('شماره تلفن قبلا ثبت شده است')
+            userprofile = user.get('userprofile')
+            if userprofile:
+                phone_number = userprofile.get('phone_number')            
+                if phone_number:
+                    if UserProfile.objects.filter(phone_number=user.get('phone_number')).exclude(pk=user.get('id')).exists() and\
+                            not self.instance.user.userproile.phone_number == phone_number:
+                        raise ValidationError('شماره تلفن قبلا ثبت شده است')
 
         # Validate avatar file
         avatar = data.get('avatar')
