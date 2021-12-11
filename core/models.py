@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.urls import reverse
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.validators import RegexValidator
 
 from PIL import Image
 import random
@@ -24,6 +25,8 @@ class UserProfile(models.Model):
     )
     social_media_username = models.CharField(max_length=255, blank=True, choices=SOCIAL_MEDIA_CHOICES)
     social_media_link = models.CharField(max_length=255, blank=True)
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
+    phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True) # validators should be a list
     # User is invited: boolean -> True or False
     is_invited = models.BooleanField(default=False)
     followers = models.ManyToManyField(User, related_name='followers', blank=True)
