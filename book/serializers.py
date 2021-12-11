@@ -183,6 +183,20 @@ class MinBookSerializer(serializers.ModelSerializer):
             pass
         return 0.0
 
+    authors = serializers.SerializerMethodField()
+    def get_authors(self, obj):
+        return [author.name for author in obj.authors.all()]
+
+    user_rate = serializers.SerializerMethodField()
+    def get_user_rate(self, obj):
+        try:
+            user = self.context['request'].user
+            print(user)
+            rate = PersonRate.objects.get(user=user, book=obj).person_rate
+            return float(rate)
+        except:
+            return None
+
     class Meta:
         model = Book
-        fields = ('id', 'title', 'rate', 'cover', 'slug')
+        fields = ('id', 'title', 'authors', 'rate', 'user_rate', 'cover', 'slug',)

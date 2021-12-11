@@ -64,7 +64,7 @@ class BookListAddBookView(APIView):
         query = request.GET.get('search')
         if query:
             books = Book.objects.filter(title__icontains=query)
-            return Response(BookSerializer(books, many=True).data)
+            return Response(BookSerializer(books, many=True).data, context={'request': self.request})
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'درخواست نامعتبر است'})
 
@@ -86,6 +86,7 @@ class MainBookListView(generics.RetrieveAPIView):
     """
     queryset = BookList.objects.all()
     serializer_class = BookListSerializer
+    # Pass context={'request': self.request}) to serialzer
 
     def get_object(self):
         queryset = self.get_queryset()
@@ -95,7 +96,10 @@ class MainBookListView(generics.RetrieveAPIView):
             obj = None
         return obj
 
-
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, context={'request': self.request})
+        return Response(serializer.data)
 class AllBookListView(generics.ListAPIView):
     """
     صفحه لیست کتاب های اضافه شده
