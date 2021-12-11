@@ -191,7 +191,6 @@ class MinBookSerializer(serializers.ModelSerializer):
     def get_user_rate(self, obj):
         try:
             user = self.context['request'].user
-            print(user)
             rate = PersonRate.objects.get(user=user, book=obj).person_rate
             return float(rate)
         except:

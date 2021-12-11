@@ -86,7 +86,8 @@ class MainBookListView(generics.RetrieveAPIView):
     """
     queryset = BookList.objects.all()
     serializer_class = BookListSerializer
-    # Pass context={'request': self.request}) to serialzer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
 
     def get_object(self):
         queryset = self.get_queryset()
@@ -100,6 +101,8 @@ class MainBookListView(generics.RetrieveAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance, context={'request': self.request})
         return Response(serializer.data)
+
+
 class AllBookListView(generics.ListAPIView):
     """
     صفحه لیست کتاب های اضافه شده
