@@ -112,14 +112,43 @@ class ManageUserSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='user.userprofile.name', required=False)
     username = serializers.CharField(source='user.username', required=False)
     email = serializers.CharField(source='user.email', required=False)
+    phone_number = serializers.CharField(source='user.userprofile.phone_number', required=False)
     class Meta:
         model = UserProfile
-        fields = ('id', 'name', 'username', 'email', 'birth_date', 'avatar', 'social_media_link')
+        fields = (
+            'id', 
+            'name', 
+            'username', 
+            'email', 
+            'birth_date', 
+            'avatar', 
+            'phone_number',
+            'social_media_link'
+        )
+
+    def validate_phone_number(self, value):
+        """
+        Check if the phone number is valid
+        :param value:
+        :return:
+        """
+        if not value:
+            return value
+        # Validate the phone number
+        if len(value) != 13:
+            print('1--------')
+            raise ValidationError('شماره تلفن معتبر نیست')
+        elif not value[1:].isdigit():
+            print(value[1:])
+            print('2--------')
+            raise ValidationError('شماره تلفن معتبر نیست')
+        return value
 
     def validate(self, data):
         """Validate user data"""
         # Validate username
         user = data.get('user')
+        userprofile = user.get('userprofile')
         if user:
             username = user.get('username')
             if username:
@@ -128,7 +157,6 @@ class ManageUserSerializer(serializers.ModelSerializer):
                 if User.objects.filter(username=username).exclude(pk=user.get('id')).exists() and\
                         not self.instance.user.username == username:
                     raise ValidationError('Username is already taken.')
-
             # Validate email
             email = user.get('email')
             if email:
@@ -137,7 +165,12 @@ class ManageUserSerializer(serializers.ModelSerializer):
                 if User.objects.filter(email=email).exclude(pk=user.get('id')).exists() and\
                         not self.instance.user.email == email:
                     raise ValidationError('Email is already taken.')
-
+            
+            phone_number = userprofile.get('phone_number')            
+            if phone_number:
+                if UserProfile.objects.filter(phone_number=user.get('phone_number')).exclude(pk=user.get('id')).exists() and\
+                        not self.instance.user.userproile.phone_number == phone_number:
+                    raise ValidationError('شماره تلفن قبلا ثبت شده است')
 
         # Validate avatar file
         avatar = data.get('avatar')
@@ -163,6 +196,8 @@ class ManageUserSerializer(serializers.ModelSerializer):
             user_data = user_data.get('userprofile', None)
             if user_data:
                 instance.name = user_data.get('name', instance.name)
+                instance.phone_number = user_data.get('phone_number', instance.phone_number)
+
             instance.user.save()
         instance.save()
 
