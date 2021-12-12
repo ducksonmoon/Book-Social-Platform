@@ -37,9 +37,7 @@ class CreateUserView(generics.CreateAPIView):
                     msg = 'مطمئن شوید پسورد حداقل ۵ حرف باشد'
                 
                 errors.append(msg)
-
             msg = {'error': '\n'.join(errors)}
-            print(msg)
             return Response(msg, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -75,7 +73,20 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Retrieve and return authentication user"""
         return self.request.user.userprofile
-
+    # If serializer is valid, save it and return the data, else return errors
+    def put(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                            context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            errors = []
+            for key, value in serializer.errors.items():
+                msg = str(value[0])
+                errors.append(msg)
+            msg = {'error': '\n'.join(errors)}
+            return Response(msg, status=status.HTTP_400_BAD_REQUEST)
 
 class ChangePasswordView(generics.UpdateAPIView):
         """
