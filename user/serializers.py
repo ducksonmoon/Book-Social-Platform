@@ -196,10 +196,8 @@ class ManageUserSerializer(serializers.ModelSerializer):
             instance.user.email = user_data.get('email', instance.user.email)            
             user_data = user_data.get('userprofile', None)
             if user_data:
-                if user_data.get('phone_number') != None:
-                    instance.phone_number = user_data.get('phone_number', instance.phone_number)
-                else: instance.phone_number = ''
-
+                instance.name = user_data.get('name', instance.name)
+                instance.phone_number = user_data.get('phone_number', '')
             instance.user.save()
         instance.save()
 
