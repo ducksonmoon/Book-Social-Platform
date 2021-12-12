@@ -153,18 +153,18 @@ class ManageUserSerializer(serializers.ModelSerializer):
             username = user.get('username')
             if username:
                 if not validate_username(username):
-                    raise ValidationError('Username is invalid.')
+                    raise ValidationError('نام کاربری معتبر نیست')
                 if User.objects.filter(username=username).exclude(pk=user.get('id')).exists() and\
                         not self.instance.user.username == username:
-                    raise ValidationError('Username is already taken.')
+                    raise ValidationError('نام کاربری قبلا ثبت شده است')
             # Validate email
             email = user.get('email')
             if email:
                 if not validate_email(email):
-                    raise ValidationError('Email is invalid.')
+                    raise ValidationError('ایمیل معتبر نیست')
                 if User.objects.filter(email=email).exclude(pk=user.get('id')).exists() and\
                         not self.instance.user.email == email:
-                    raise ValidationError('Email is already taken.')
+                    raise ValidationError('ایمیل قبلا ثبت شده است')
             userprofile = user.get('userprofile')
             if userprofile:
                 phone_number = userprofile.get('phone_number')            
@@ -178,7 +178,7 @@ class ManageUserSerializer(serializers.ModelSerializer):
         if avatar:
             validate_image_extension(avatar.name)
             if avatar.size > 2 * 1024 * 1024:
-                raise ValidationError('Avatar file too large ( > 2mb ).')
+                raise ValidationError('آواتار باید کمتر از 2 مگابایت باشد')
 
         return data
 
