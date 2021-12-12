@@ -73,10 +73,12 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Retrieve and return authentication user"""
         return self.request.user.userprofile
-    # If serializer is valid, save it and return the data, else return errors
+
     def put(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data,
-                                            context={'request': request})
+        # pass self request user to serializer
+        serializer = self.serializer_class(
+            instance=self.get_object(), data=request.data, partial=True,
+            context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
