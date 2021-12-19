@@ -1,3 +1,4 @@
+from django.http import request
 from rest_framework import serializers
 from django.conf import settings
 
@@ -16,7 +17,7 @@ class BookListSerializer(serializers.ModelSerializer):
     books = serializers.SerializerMethodField()
     def get_books(self, obj):
         """Get books from BookList"""
-        return MinBookSerializer(obj.books.all(), many=True, context={'request': self.context['request']}).data
+        return MinBookSerializer(obj.books.all(), many=True, context={'request': request}).data
     # books = serializers.PrimaryKeyRelatedField(many=True, queryset=Book.objects.all())
     
     # Show date_created field as Y.M.D
