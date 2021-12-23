@@ -87,6 +87,7 @@ class MainBookListView(generics.RetrieveAPIView):
     queryset = BookList.objects.all()
     serializer_class = BookListSerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = SmallPagesPagination
     authentication_classes = (TokenAuthentication,)
 
     def get_object(self):
