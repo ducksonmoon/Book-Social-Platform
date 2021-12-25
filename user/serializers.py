@@ -94,6 +94,13 @@ class AuthTokenSerializer(serializers.Serializer):
         username = attrs.get('username').lower()
         password = attrs.get('password')
 
+        # If user enter email, find username
+        def is_email(username):
+            """Check if the username is an email"""
+            return '@' in username and '.' in username and 'gmail' in username
+        if is_email(username):
+            username = User.objects.get(email=username).username
+
         user = authenticate(
             request=self.context.get('request'),
             username=username,
