@@ -5,6 +5,7 @@ from rest_framework import generics, authentication, permissions, status
 from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.contrib.auth.models import User
+from rest_framework.views import APIView
 
 from core.models import Invitation, UserProfile, ConfirmCode
 from user.serializers import (
@@ -110,7 +111,7 @@ class ChangePasswordView(generics.UpdateAPIView):
             if serializer.is_valid():
                 # Check old password
                 if not self.object.check_password(serializer.data.get("old_password")):
-                    return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"error": "پسورد اشتباه است."}, status=status.HTTP_400_BAD_REQUEST)
                 # set_password also hashes the password that the user will get
                 self.object.set_password(serializer.data.get("new_password"))
                 self.object.save()
