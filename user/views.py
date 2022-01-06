@@ -122,6 +122,7 @@ class ChangePasswordView(generics.UpdateAPIView):
                 errors = []
                 for key, value in serializer.errors.items():
                     msg = str(value[0])
+                    print(msg)
                     msg = errors_persian_translator(msg)
                     errors.append(msg)
                 msg = {'error': '\n'.join(errors)}

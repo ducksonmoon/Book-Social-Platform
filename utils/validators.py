@@ -48,5 +48,9 @@ def errors_persian_translator(error: str):
         error_persian = "این فیلد باید حداقل 5 کاراکتر داشته باشد."
     elif error == 'Ensure this field has at most 30 characters.':
         error_persian = "این فیلد باید حداکثر 30 کاراکتر داشته باشد."
-    
+    elif error == 'This password is entirely numeric.':
+        error_persian = "رمزعبور باید شامل حروف هم باشد."
+    elif error == 'This password is entirely alphabetic.':
+        error_persian = "رمزعبور تنها شامل حروف است."
+
     return error_persian
