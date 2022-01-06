@@ -34,3 +34,19 @@ def validate_image_extension(value:str) -> bool:
         raise ValidationError(f"{value.name} is not a supported image extension.")
     return True
 
+def errors_persian_translator(error: str):
+    """ Translate password errors to Persian. """
+    if error == "This password is too common.":
+        error_persian = "رمزعبور ضعیف است."
+    elif error == "This password is too short. It must contain at least 8 characters.":
+        error_persian = "رمزعبور بسیار کوتاه است. باید حداقل 8 کاراکتر داشته باشد."
+    elif error == 'A user with that username already exists.':
+        error_persian = "یک کاربر با این نام کاربری قبلا ثبت شده است."
+    elif error == 'Enter a valid email address.':
+        error_persian = "ایمیل وارد شده معتبر نیست."
+    elif error == 'Ensure this field has at least 5 characters.':
+        error_persian = "این فیلد باید حداقل 5 کاراکتر داشته باشد."
+    elif error == 'Ensure this field has at most 30 characters.':
+        error_persian = "این فیلد باید حداکثر 30 کاراکتر داشته باشد."
+    
+    return error_persian

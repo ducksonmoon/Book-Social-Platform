@@ -45,6 +45,15 @@ class UserSerializer(serializers.ModelSerializer):
             raise ValidationError('ایمیل قبلا ثبت شده است')
         return value
 
+    def validate_password(self, value):
+        """
+        Check if the password is valid
+        :param value:
+        :return:
+        """
+        validate_password(value)
+        return value
+
     def create(self, validated_data):
         """Create a new user with encrypted password and return it. """
         data = validated_data.pop('userprofile', None)

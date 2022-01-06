@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
+from rest_framework.exceptions import ValidationError
 
 from core.models import Invitation, UserProfile, ConfirmCode
 from user.serializers import (
@@ -13,6 +14,7 @@ from user.serializers import (
     ChangePasswordSerializer, ConfirmCodeSerializer, InvitationSerializer,
     InvitationCodeSerializer
 )
+from utils.validators import errors_persian_translator
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -30,13 +32,7 @@ class CreateUserView(generics.CreateAPIView):
             errors = []
             for key, value in serializer.errors.items():
                 msg = str(value[0])
-                if msg == 'A user with that username already exists.':
-                    msg = 'نام کابری ثبت شده.'
-                elif msg == 'Enter a valid email address.':
-                    msg = 'ایمیل معتبر نیست'
-                elif msg == 'Ensure this field has at least 5 characters.':
-                    msg = 'مطمئن شوید پسورد حداقل ۵ حرف باشد'
-                
+                msg = errors_persian_translator(msg)
                 errors.append(msg)
             msg = {'error': '\n'.join(errors)}
             return Response(msg, status=status.HTTP_400_BAD_REQUEST)
@@ -121,8 +117,15 @@ class ChangePasswordView(generics.UpdateAPIView):
                     'message': 'Password updated successfully.',
                     'data': []
                 }
-
                 return Response(response)
+            else:
+                errors = []
+                for key, value in serializer.errors.items():
+                    msg = str(value[0])
+                    msg = errors_persian_translator(msg)
+                    errors.append(msg)
+                msg = {'error': '\n'.join(errors)}
+                return Response(msg, status=status.HTTP_400_BAD_REQUEST)
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
