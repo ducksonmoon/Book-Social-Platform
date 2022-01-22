@@ -52,5 +52,7 @@ def errors_persian_translator(error: str):
         error_persian = "رمزعبور باید شامل حروف هم باشد."
     elif error == 'This password is entirely alphabetic.':
         error_persian = "رمزعبور تنها شامل حروف است."
+    else:
+        error_persian = error
 
     return error_persian
