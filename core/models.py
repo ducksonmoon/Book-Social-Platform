@@ -31,6 +31,7 @@ class UserProfile(models.Model):
     is_invited = models.BooleanField(default=False)
     followers = models.ManyToManyField(User, related_name='followers', blank=True)
     following = models.ManyToManyField(User, related_name='following', blank=True)
+    raw_data = models.TextField(blank=True, null=True)
 
     reviews = models.ManyToManyField('Review', related_name='reviews', blank=True)
 
