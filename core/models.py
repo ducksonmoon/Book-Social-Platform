@@ -31,7 +31,6 @@ class UserProfile(models.Model):
     is_invited = models.BooleanField(default=False)
     followers = models.ManyToManyField(User, related_name='followers', blank=True)
     following = models.ManyToManyField(User, related_name='following', blank=True)
-    raw_data = models.TextField(blank=True, null=True)
 
     reviews = models.ManyToManyField('Review', related_name='reviews', blank=True)
 
@@ -335,6 +334,7 @@ class Review(models.Model):
 
 
 class Book(models.Model):
+    raw_data = models.TextField(blank=True, null=True)
     title = models.CharField(max_length=250)
     subtitle = models.CharField(max_length=250, blank=True, null=True)
     authors = models.ManyToManyField(Author, related_name='books', blank=True)
