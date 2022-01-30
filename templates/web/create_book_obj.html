@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+  </head>
+  <body>
+<!-- Image and text -->
+    <nav class="navbar navbar-light bg-light">
+      <a class="navbar-brand" href="/">
+        <img src="https://nebigapp.com/wp-content/uploads/2021/06/favicon.png" width="33" height="33" class="d-inline-block align-top" alt="">
+            Iran Nebig
+      </a>
+      <a href="/webapp/books/1/" class="btn btn-outline-success my-2 my-sm-0">Start</a>
+
+      <a href="/admin/logout/" class="btn btn-outline-danger my-2 my-sm-0">Logout</a>
+    </nav>
+
+    <div class="container" style="margin-top: 20px;">
+        <div class="row">
+          <div class="col" dir="rtl">
+            <form action="webapp/books/{{next}}/" method="post">
+              {% csrf_token %}
+              {{ form.errors }}
+              <input class="form-control" type="text" id="title" name="title" placeholder="title" value="{{ data.title }}">
+              <input class="form-control" type="text" id="subtitle" name="subtitle" placeholder="subtitle" value="{{ data.subtitle }}">
+              {{ form_book.author.label }}
+              <input class="form-control" type="text" id="author" name="author" placeholder="author" value="{{ data.author }}">
+              {{ form_book.translator.label }}
+              <input class="form-control" type="text" id="translator" name="translator" placeholder="translator" value="{{ data.translator }}">
+              <input class="form-control" type="text" id="publisher" name="publisher" placeholder="publisher" value="{{ data.publisher }}">
+              <input class="form-control" type="text" id="pages" name="pages" placeholder="pages" value="{{ data.pages }}">
+              <input class="form-control" type="text" id="isbn" name="isbn" placeholder="isbn" value="{{ data.isbn }}">
+              <input class="form-control" type="text" id="language" name="language" placeholder="language" value="{{ data.language }}">
+              <br>
+              {{ form_book.size.label }}
+              {{ form_book.size }}
+              {{ form_book.cover_type.label }}
+              {{ form_book.cover_type }}
+              <center>
+                <button type="submit" value="Submit" class="btn btn-primary" style="margin-top:20px;">Submit</button>
+              </center>
+          </form>
+          </div>
+          <div class="col">
+            <div class="container">
+              <div class="row" dir="rtl">
+                {% for k, v in data.items%}
+                <div class="col"><b>{{k}}:</b>  {{v}}</div>
+                <div class="w-100"></div>
+                {% endfor %}
+              </div>
+            </div>
+            <center style="margin-top:20px;">
+              <a href="/webapp/books/{{prev}}/" class="btn btn-info">Prev</a>
+              <button type="button" class="btn btn-danger">Delete</button>
+              <a href="/webapp/books/{{next}}/" class="btn btn-primary">Next</a>
+            </center>
+          </div>
+        </div>
+    </div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
