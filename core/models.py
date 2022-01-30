@@ -333,8 +333,14 @@ class Review(models.Model):
         return self.user.username + ' review ' + self.book.title
 
 
+class BookRawData(models.Model):
+    data = models.JSONField(default=dict)
+    is_active = models.BooleanField(default=True)
+
+
 class Book(models.Model):
-    raw_data = models.TextField(blank=True, null=True)
+    raw_data = models.JSONField(default=dict, blank=True, null=True)
+    label = models.CharField(max_length=255, blank=True, null=True)
     title = models.CharField(max_length=250)
     subtitle = models.CharField(max_length=250, blank=True, null=True)
     authors = models.ManyToManyField(Author, related_name='books', blank=True)
@@ -345,6 +351,7 @@ class Book(models.Model):
     pages = models.IntegerField(default=0, blank=True, null=True)
     isbn = models.CharField(max_length=255, blank=True, null=True)
     size = models.ForeignKey('Size', on_delete=models.SET_NULL, blank=True, null=True)
+    language = models.CharField(max_length=255, blank=True, null=True)
     cover_type = models.ForeignKey('CoverType', on_delete=models.SET_NULL, blank=True, null=True)
     # And float number with max 5 and min 0
     rate = models.FloatField(default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(5.0)], blank=True, null=True)
