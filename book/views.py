@@ -42,6 +42,7 @@ class BookViewSet(APIView):
         action = request.POST.get("action")
         book = get_object_or_404(Book, slug=slug)
         user = request.user
+
         if action == 'read':
             user.userprofile.read_book(book)
             print(user.userprofile.readed_books.all())
@@ -95,6 +96,37 @@ class BookViewSet(APIView):
         elif action == 'unlike_book':
             user.userprofile.unlike_book(book)
             print(user.userprofile.liked_books.all())
+            return Response(status=status.HTTP_200_OK, data={"message": "انجام شد"})
+
+        elif action == 'main':
+            for req in request.data:
+                if req == 'read':
+                    user.userprofile.read_book(book)
+                elif req == 'unread':
+                    user.userprofile.unread_book(book)
+                elif req == 'favorite':
+                    if user.userprofile.favorite_books.count() == 3:
+                        raise ValidationError(_('You can only have up to 3 favorite books.'))
+                    user.userprofile.add_favorite_book(book)
+                elif req == 'unfavorite':
+                    user.userprofile.remove_favorite_book(book)
+                elif req == 'add_read_later_book':
+                    user.userprofile.add_read_later_book(book)
+                elif req == 'remove_read_later_book':
+                    user.userprofile.remove_read_later_book(book)
+                elif req == 'rate_book':
+                    rate = float(request.data['rate'])
+                    if not 0<=rate<=5:
+                        # return validation error in a dict format
+                        error_dict = {
+                            'error': _('Rate must be between 0 and 5')
+                        }
+                        raise ValidationError(error_dict)
+                    user.userprofile.rate_book(book, rate)
+                elif req == 'like_book':
+                    user.userprofile.like_book(book)
+                elif req == 'unlike_book':
+                    user.userprofile.unlike_book(book)
             return Response(status=status.HTTP_200_OK, data={"message": "انجام شد"})
 
         else:
