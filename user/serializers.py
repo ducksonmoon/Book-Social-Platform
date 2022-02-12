@@ -138,6 +138,7 @@ class ManageUserSerializer(serializers.ModelSerializer):
             'email', 
             'birth_date', 
             'avatar', 
+            'bio',
             'phone_number',
             'social_media_link'
         )
@@ -152,11 +153,8 @@ class ManageUserSerializer(serializers.ModelSerializer):
             return value
         # Validate the phone number
         if len(value) != 13:
-            print('1--------')
             raise ValidationError('شماره تلفن معتبر نیست')
         elif not value[1:].isdigit():
-            print(value[1:])
-            print('2--------')
             raise ValidationError('شماره تلفن معتبر نیست')
         return value
 
@@ -200,6 +198,8 @@ class ManageUserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         """Update user profile"""
+        # Change bio if changed
+        instance.bio = validated_data.get('bio')
         user_data = validated_data.pop('user', None)
         if validated_data.get('avatar') != None:
             instance.avatar = validated_data.get('avatar', instance.avatar)
