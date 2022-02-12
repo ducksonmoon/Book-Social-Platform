@@ -41,9 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django.contrib.sites',
+    # API:
     'rest_framework',
     'rest_framework.authtoken',
+    'dj_rest_auth',
     # Apps:
     'core.apps.CoreConfig',
     'user.apps.UserConfig',
@@ -56,6 +58,12 @@ INSTALLED_APPS = [
     'drf_yasg',
     'corsheaders',
     'django_extensions',
+    'crispy_forms',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount', 
+    'allauth.socialaccount.providers.google', # For google auth
+    
     # Custom Modules:
     'utils',
 ]
@@ -72,6 +80,26 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
+
+AUTHENTICATION_BACKENDS = [
+    # Used for default signin such as loggin into admin panel.
+    'django.contrib.auth.backends.ModelBackend', 
+    # Used for social authentications.
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+SITE_ID = 1
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
 
 ROOT_URLCONF = 'app.urls'
 
@@ -165,7 +193,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'mehrshadbaqerzadegan@gmail.com'
-EMAIL_HOST_PASSWORD = 'kxrrfjsfmpgwteiq'
+EMAIL_HOST_PASSWORD = 'hvraafhhdyqluxmz'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

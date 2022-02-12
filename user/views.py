@@ -87,6 +87,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
             msg = {'error': '\n'.join(errors)}
             return Response(msg, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ChangePasswordView(generics.UpdateAPIView):
         """
         An endpoint for changing password.
