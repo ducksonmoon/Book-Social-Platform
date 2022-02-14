@@ -51,8 +51,8 @@ urlpatterns = [
     path('docs/', RedirectView.as_view(url='https://documenter.getpostman.com/view/14262320/UUy1e76q', permanent=True)),
     path('list/', include('booklist.urls')),
     path('info/', include('info.urls')),
-    # path('accounts/', include('accounts.urls')),
-    path('accounts/', include('allauth.urls')),
+    path('accounts/', include('accounts.urls')),
+    # path('accounts/', include('allauth.urls')),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
 
     path('webapp/', include('web.urls')),
