@@ -102,6 +102,13 @@ class UserProfile(models.Model):
             return True
         return False
 
+    # Change date of reading book
+    def change_date_of_reading_book(self, book, date):
+        if book in self.readed_books.all():
+            Readers.objects.filter(user=self.user, book=book).update(date_readed=date)
+            return True
+        return False
+
     def has_readed_book(self, book):
         return book in self.readed_books.all()
 

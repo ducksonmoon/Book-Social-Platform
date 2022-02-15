@@ -1,7 +1,9 @@
+import jdatetime
+
 from django.conf import settings
 from rest_framework import serializers
 
-from core.models import Book, Author, Publisher, Review, PersonRate
+from core.models import Book, Author, Publisher, Review, PersonRate, Readers
 
 
 
@@ -108,6 +110,16 @@ class BookSerializer(serializers.ModelSerializer):
         except:
             return False
 
+    date_readed = serializers.SerializerMethodField()
+    def get_date_readed(self, obj):
+        try:
+            user = self.context['request'].user
+            readed_book = Readers.objects.get(user=user, book=obj)
+            jdate = jdatetime.datetime.fromgregorian(date=readed_book.date_readed.date())
+            return jdate.strftime('%Y-%m-%d-%A')
+        except:
+            return None
+
     class Meta:
         model = Book
         fields = (
@@ -128,6 +140,7 @@ class BookSerializer(serializers.ModelSerializer):
             'rate',
             'user_rate',
             'is_readed',
+            'date_readed',
             'goodreads_rate',
             'three_friends',
             'three_comments',

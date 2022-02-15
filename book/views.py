@@ -1,3 +1,5 @@
+import jdatetime
+
 from rest_framework import viewsets, mixins, status, views, generics, permissions
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
@@ -97,6 +99,17 @@ class BookViewSet(APIView):
             user.userprofile.unlike_book(book)
             print(user.userprofile.liked_books.all())
             return Response(status=status.HTTP_200_OK, data={"message": "انجام شد"})
+        
+        elif action == 'change_date':
+            date = request.data['date']
+            date_splited = date.split('-')
+            # Jalali to Gregorian
+            jdate = jdatetime.date(
+                int(date_splited[0]), int(date_splited[1]), int(date_splited[2])
+            )
+            gdate = jdate.togregorian()
+            user.userprofile.change_date_of_reading_book(book, gdate)
+            return Response(status=status.HTTP_200_OK, data={"message": "انجام شد"})
 
         elif action == 'main':
             for req in request.data:
@@ -127,6 +140,16 @@ class BookViewSet(APIView):
                     user.userprofile.like_book(book)
                 elif req == 'unlike_book':
                     user.userprofile.unlike_book(book)
+                elif req == 'change_date':
+                    date = request.data['date']
+                    date_splited = date.split('-')
+                    # Jalali to Gregorian
+                    jdate = jdatetime.date(
+                        int(date_splited[0]), int(date_splited[1]), int(date_splited[2]), locale='fa_IR'
+                    )
+                    gdate = jdate.togregorian()
+                    user.userprofile.change_date_of_reading_book(book, gdate)
+
             return Response(status=status.HTTP_200_OK, data={"message": "انجام شد"})
 
         else:
