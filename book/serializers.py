@@ -116,7 +116,7 @@ class BookSerializer(serializers.ModelSerializer):
             user = self.context['request'].user
             readed_book = Readers.objects.get(user=user, book=obj)
             jdate = jdatetime.datetime.fromgregorian(date=readed_book.date_readed.date())
-            return jdate.strftime('%Y-%m-%d-%A')
+            return jdate.strftime('%Y-%m-%d')
         except:
             return None
 
