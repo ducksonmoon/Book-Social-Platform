@@ -13,8 +13,11 @@ class ReviewSerializer(serializers.ModelSerializer):
     avatar = serializers.SerializerMethodField()
     def get_avatar(self, obj):  
         base_url = settings.BASE_URL
-        return base_url + obj.user.userprofile.avatar.url
-    
+        try:
+            return base_url + obj.user.userprofile.avatar.url
+        except:
+            return None
+
     rate_to_book = serializers.SerializerMethodField()
     def get_rate_to_book(self, obj):
 
