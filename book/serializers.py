@@ -64,14 +64,22 @@ class BookSerializer(serializers.ModelSerializer):
         reviews = obj.reviews.all()[:3]
         return ReviewSerializer(reviews, many=True).data
 
+
     related_friend_count = serializers.SerializerMethodField()
     def get_related_friend_count(self, obj):
-            user = self.context['request'].user            
-            if user.is_authenticated:
-                res = user.userprofile.related_following_to_book(obj)
-                return res.count()
-            else:
-                return 0
+        # count = 0
+        user = self.context['request'].user            
+        if user.is_authenticated:
+            """
+            for friend in user.userprofile.following.all():
+                if obj in friend.userprofile.readed_books.all():
+                    count += 1
+            """
+            books = user.userprofile.related_following_to_book(obj)
+            return len(books)
+        else:
+            return 0
+
 
     three_friends = serializers.SerializerMethodField()
     def get_three_friends(self, obj):

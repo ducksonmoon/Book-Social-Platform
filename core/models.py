@@ -115,8 +115,11 @@ class UserProfile(models.Model):
     def related_following_to_book(self, book):
         result = []
         for u in self.following.all():
-            if book in u.userprofile.readed_books.all():
-                result.append(u)
+            try:
+                if book in u.userprofile.readed_books.all():
+                    result.append(u)
+            except:
+                pass
         return result
 
     def rate_book(self, book, rate):
