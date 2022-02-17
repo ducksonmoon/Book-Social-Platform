@@ -63,11 +63,15 @@ class BookSerializer(serializers.ModelSerializer):
 
     three_friends = serializers.SerializerMethodField()
     def get_three_friends(self, obj):
-        result = []
+        result = {
+            'related_friends_count': 0,
+        }
+        related_frinds = []
         try:
             user = self.context['request'].user            
             if user.is_authenticated:
                 res = user.userprofile.related_following_to_book(obj)
+                result['related_friends_count'] = res.count()
                 base_url = settings.BASE_URL
                 for user in res:
                     rate = PersonRate.objects.get(user=user, book=obj).person_rate
@@ -76,7 +80,7 @@ class BookSerializer(serializers.ModelSerializer):
                         'avatar': base_url + user.userprofile.avatar.url,
                         'rate': float(rate),
                     }
-                    result.append(u)
+                    related_frinds.append(u)
         except:
             pass
         return result
