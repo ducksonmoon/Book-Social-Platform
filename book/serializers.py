@@ -63,15 +63,11 @@ class BookSerializer(serializers.ModelSerializer):
 
     three_friends = serializers.SerializerMethodField()
     def get_three_friends(self, obj):
-        result = {
-            'related_friends_count': 0,
-        }
         related_frinds = []
         try:
             user = self.context['request'].user            
             if user.is_authenticated:
                 res = user.userprofile.related_following_to_book(obj)
-                result['related_friends_count'] = res.count()
                 base_url = settings.BASE_URL
                 for user in res:
                     rate = PersonRate.objects.get(user=user, book=obj).person_rate
@@ -83,7 +79,7 @@ class BookSerializer(serializers.ModelSerializer):
                     related_frinds.append(u)
         except:
             pass
-        return result
+        return related_frinds
     
     # Add current site to cover image
     cover = serializers.SerializerMethodField()
