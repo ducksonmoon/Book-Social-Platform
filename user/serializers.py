@@ -199,7 +199,8 @@ class ManageUserSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Update user profile"""
         # Change bio if changed
-        instance.bio = validated_data.get('bio')
+        if 'bio' in validated_data:
+            instance.bio = validated_data.get('bio')
         user_data = validated_data.pop('user', None)
         if validated_data.get('avatar') != None:
             instance.avatar = validated_data.get('avatar', instance.avatar)
