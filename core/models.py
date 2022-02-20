@@ -17,7 +17,10 @@ import sys
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150, blank=True, null=True)
+    slug = models.SlugField(max_length=150, blank=True)
+    email = models.EmailField(max_length=150, blank=True)
+    phone = models.CharField(max_length=150, blank=True)
     bio = models.TextField(max_length=500, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, default='defaults/avatar-happy.png')

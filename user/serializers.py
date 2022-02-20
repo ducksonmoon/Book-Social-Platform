@@ -3,6 +3,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
+from numpy import require
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from core.models import UserProfile, ConfirmCode, Invitation
@@ -11,7 +12,7 @@ from utils.validators import validate_username, validate_email, validate_image_e
 
 class UserSerializer(serializers.ModelSerializer):
     """ Serializer for the users object """
-    name = serializers.CharField(source='userprofile.name')
+    name = serializers.CharField(source='userprofile.name', required=False)
 
     class Meta:
         model = User
@@ -57,25 +58,28 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Create a new user with encrypted password and return it. """
         data = validated_data.pop('userprofile', None)
+        if data:
+         name = data.get('name', ' ')
+        else:
+            name = ' '
         # make username lower case
         validated_data['username'] = validated_data['username'].lower()
         # make email lower case
         validated_data['email'] = validated_data['email'].lower()
         # create user
         user = User.objects.create_user(**validated_data)
-        if data:
-            userprofile = UserProfile.objects.create(user=user, name=data['name'])
-            # Changed our strategy to send an email to the user with a code to confirm their account.
-            ''' 
-            code = ConfirmCode.objects.create(user=user) 
-            send_mail(
-                'Nebig - Confirm Code', 
-                'Your confirm code is \n\n' + code.code, 
-                settings.EMAIL_HOST_USER, 
-                [user.email], 
-                fail_silently=False
-            )
-            '''
+        userprofile = UserProfile.objects.create(user=user, name=name)
+        # Changed our strategy to send an email to the user with a code to confirm their account.
+        ''' 
+        code = ConfirmCode.objects.create(user=user) 
+        send_mail(
+            'Nebig - Confirm Code', 
+            'Your confirm code is \n\n' + code.code, 
+            settings.EMAIL_HOST_USER, 
+            [user.email], 
+            fail_silently=False
+        )
+        '''
         return user
 
     def update(self, instance, validated_data):
