@@ -129,6 +129,14 @@ class BookSerializer(serializers.ModelSerializer):
             return True
         except:
             return False
+    is_read_later = serializers.SerializerMethodField()
+    def get_is_read_later(self, obj):
+        try:
+            user = self.context['request'].user
+            user.userprofile.read_later_books.get(id=obj.id)
+            return True
+        except:
+            return False
 
     date_readed = serializers.SerializerMethodField()
     def get_date_readed(self, obj):
@@ -160,6 +168,7 @@ class BookSerializer(serializers.ModelSerializer):
             'rate',
             'user_rate',
             'is_readed',
+            'is_read_later',
             'date_readed',
             'goodreads_rate',
             'three_friends',
