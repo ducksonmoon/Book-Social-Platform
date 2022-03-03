@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import PasswordResetForm, UserCreationForm
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.db.models.query_utils import Q
 from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
@@ -27,7 +28,8 @@ def password_reset_request(request):
 			if associated_users.exists():
 				for user in associated_users:
 					subject = "Password Reset Requested"
-					email_template_name = "main/password/password_reset_email.txt"
+					# email_template_name = "main/password/password_reset_email.txt"
+					email_template_name = "main/password/password_rest_temp.html"
 					c = {
 					"email":user.email,
 					'domain':'127.0.0.1:8000',
@@ -36,9 +38,12 @@ def password_reset_request(request):
 					'token': default_token_generator.make_token(user),
 					'protocol': 'http',
 					}
-					email = render_to_string(email_template_name, c)
+					# email = render_to_string(email_template_name, c)
+					html_message = render_to_string(email_template_name, c)
+					plain_message = strip_tags(html_message)
 					try:
-						send_mail(subject, email, 'admin@example.com' , [user.email], fail_silently=False)
+						# send_mail(subject, email, 'admin@example.com' , [user.email], fail_silently=False)
+						send_mail(subject, plain_message, 'admin@example.com', [user.email], html_message=html_message)
 					except BadHeaderError:
 
 						return HttpResponse('Invalid header found.')
@@ -63,7 +68,8 @@ class PasswordResetAPI(APIView):
 		if associated_users.exists():
 			for user in associated_users:
 				subject = "Password Reset Requested"
-				email_template_name = "main/password/password_reset_email.txt"
+				# email_template_name = "main/password/password_reset_email.txt"
+				email_template_name = "main/password/password_rest_temp.html"
 				c = {
 				"email":user.email,
 				'domain':'nebigapp.com',
