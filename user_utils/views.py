@@ -15,7 +15,6 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-from django.core.mail import EmailMultiAlternatives
 
 from rest_framework.views import APIView
 
@@ -44,14 +43,10 @@ def password_reset_request(request):
 					plain_message = strip_tags(html_message)
 					try:
 						# send_mail(subject, email, 'admin@example.com' , [user.email], fail_silently=False)
-						# send_mail(subject, plain_message, 'admin@example.com', [user.email], html_message=html_message)
-						msg = EmailMultiAlternatives(subject, plain_message, 'admin@example.com', [user.email])
-						msg.attach_alternative(html_message, "text/html")
-						msg.send()
+						send_mail(subject, plain_message, 'admin@example.com', [user.email], html_message=html_message)
 					except BadHeaderError:
-
 						return HttpResponse('Invalid header found.')
-						
+					
 					messages.success(request, 'A message with reset password instructions has been sent to your inbox.')
 					return HttpResponse("Password reset request sent.")
 			messages.error(request, 'An invalid email has been entered.')
@@ -76,19 +71,23 @@ class PasswordResetAPI(APIView):
 				email_template_name = "main/password/password_rest_temp.html"
 				c = {
 				"email":user.email,
-				'domain':'nebigapp.com',
+				'domain':'127.0.0.1:8000',
 				'site_name': 'Nebig',
 				"uid": urlsafe_base64_encode(force_bytes(user.pk)),
 				'token': default_token_generator.make_token(user),
 				'protocol': 'http',
 				}
-				email = render_to_string(email_template_name, c)
+				# email = render_to_string(email_template_name, c)
+				html_message = render_to_string(email_template_name, c)
+				plain_message = strip_tags(html_message)
 				try:
-					send_mail(subject, email, 'admin@example.com' , [user.email], fail_silently=False)
+					# send_mail(subject, email, 'admin@example.com' , [user.email], fail_silently=False)
+					send_mail(subject, plain_message, 'admin@example.com', [user.email], html_message=html_message)
 				except BadHeaderError:
 					return HttpResponse('Invalid header found.')
+				
 				messages.success(request, 'A message with reset password instructions has been sent to your inbox.')
 				return HttpResponse("Password reset request sent.")
-		
+
 		messages.error(request, 'An invalid email has been entered.')		
 		return HttpResponse(status=400)
