@@ -1,3 +1,4 @@
+from turtle import title
 import jdatetime
 
 from rest_framework import viewsets, mixins, status, views, generics, permissions
@@ -264,7 +265,8 @@ class SearchViewSet(generics.ListAPIView):
         # Return all books
         query = request.GET.get('search')
         if query:
-            books = Book.objects.filter(title__icontains=query)[:10]
+            # books = Book.objects.filter(title__icontains=query)[:10]
+            books = Book.objects.filter(Q(title__icontains=query) | Q(title__startswith=query))
             serializer = MinBookSerializer(books, many=True)
             return Response(serializer.data)
         else:
