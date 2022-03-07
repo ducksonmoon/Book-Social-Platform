@@ -32,7 +32,7 @@ def password_reset_request(request):
 					email_template_name = "main/password/password_rest_temp.html"
 					c = {
 					"email":user.email,
-					'domain':'127.0.0.1:8000',
+					'domain':'nebigapp.com',
 					'site_name': 'Nebig',
 					"uid": urlsafe_base64_encode(force_bytes(user.pk)),
 					'token': default_token_generator.make_token(user),
@@ -71,7 +71,7 @@ class PasswordResetAPI(APIView):
 				email_template_name = "main/password/password_rest_temp.html"
 				c = {
 				"email":user.email,
-				'domain':'127.0.0.1:8000',
+				'domain':'nebigapp.com',
 				'site_name': 'Nebig',
 				"uid": urlsafe_base64_encode(force_bytes(user.pk)),
 				'token': default_token_generator.make_token(user),
