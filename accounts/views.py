@@ -161,7 +161,7 @@ class SearchViewSet(generics.ListAPIView):
         if query:
             # TODO: is_invited -> Check if user is invited with invitaion code
             # for further development in future remove this filter
-            users = User.objects.filter(username__icontains=query.lower(), userprofile__is_invited=True)[:10]
+            users = User.objects.filter(username__icontains=query.lower())[:10]
             user_r = []
             for user in users:
                 try:
