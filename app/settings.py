@@ -26,12 +26,15 @@ SECRET_KEY = 'oops-i-did-it-again.'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    '*',
+]
+
+"""
     'https://nebig.iran.liara.run/',
     'https://api.nebigapp.com/',
     'localhost',
     '127.0.0.1',
-]
-
+"""
 # Application definition
 
 INSTALLED_APPS = [
