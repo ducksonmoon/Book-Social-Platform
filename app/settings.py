@@ -25,9 +25,7 @@ SECRET_KEY = 'oops-i-did-it-again.'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    '*',
-]
+ALLOWED_HOSTS = []
 
 """
     'https://nebig.iran.liara.run/',
@@ -35,8 +33,8 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
 """
-# Application definition
 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,10 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    
     # API:
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
+    
     # Apps:
     'core.apps.CoreConfig',
     'user.apps.UserConfig',
@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'info.apps.InfoConfig',
     'accounts.apps.AccountsConfig',
     'web.apps.WebConfig',
+    
     # Third-parties:
     'drf_yasg',
     'corsheaders',
@@ -79,10 +80,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
+    # Cors:
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
+
+# Cors Headers
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = (
+    'https://nebig.iran.liara.run',
+    'https://api.nebigapp.com',
+    'localhost',
+)
 
 AUTHENTICATION_BACKENDS = [
     # Used for default signin such as loggin into admin panel.
@@ -90,6 +100,7 @@ AUTHENTICATION_BACKENDS = [
     # Used for social authentications.
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
+
 SITE_ID = 1
 
 SOCIALACCOUNT_PROVIDERS = {
