@@ -91,7 +91,11 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
     'https://nebig.iran.liara.run',
     'https://api.nebigapp.com',
-    'localhost',
+    'https://nebigapp.com',
+    'https://nebigapp.ir',
+    'http://localhost',
+    'http://localhost:3000',
+    'http://localhost:8000',
 )
 
 AUTHENTICATION_BACKENDS = [
@@ -205,9 +209,17 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# Goole Settings Email
+"""
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'mehrshadbaqerzadegan@gmail.com'
 EMAIL_HOST_PASSWORD = 'hvraafhhdyqluxmz'
+EMAIL_PORT = 587
+""" 
+# Nebig Settings Email
+EMAIL_HOST = 'smtp.iran.liara.ir'
+EMAIL_HOST_USER = 'nebig'
+EMAIL_HOST_PASSWORD = '521ee760-055d-49d4-9f3a-4b5e9b856029'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

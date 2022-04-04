@@ -43,7 +43,7 @@ def password_reset_request(request):
 					plain_message = strip_tags(html_message)
 					try:
 						# send_mail(subject, email, 'admin@example.com' , [user.email], fail_silently=False)
-						send_mail(subject, plain_message, 'admin@example.com', [user.email], html_message=html_message)
+						send_mail(subject, plain_message, 'team@nebigapp.ir', [user.email], html_message=html_message)
 					except BadHeaderError:
 						return HttpResponse('Invalid header found.')
 					
