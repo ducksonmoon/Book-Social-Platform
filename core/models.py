@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -500,3 +501,13 @@ class Report(models.Model):
         if self.profile:
             return self.profile.user.username
         return 'Report'
+
+
+class ReportBook(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.book.title

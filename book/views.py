@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 from book.paginations import SmallPagesPagination
 from book import permissions as book_permissions
 from book import serializers
-from core.models import Book, UserProfile, Readers, Review, Liked
+from core.models import *
 from book.serializers import BookSerializer, ReviewSerializer, ReviewDetailSerializer, MinBookSerializer
 from accounts.serializers import ProfileSerializer, UserForBookSerializer
 from utils.functions import report
@@ -55,6 +55,10 @@ class BookViewSet(APIView):
             user.userprofile.unread_book(book)
             print(user.userprofile.readed_books.all())
             return Response(status=status.HTTP_200_OK , data={"message": "از لیست حذف شد"})
+
+        elif action == 'report':
+            ReportBook.objects.create(book=book, owner=user)
+            return Response(status=status.HTTP_200_OK, data={"message": "گزارش شد"})
 
         elif action == 'favorite':
             if user.userprofile.favorite_books.count() == 3:
