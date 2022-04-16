@@ -277,6 +277,29 @@ class SearchViewSet(generics.ListAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'درخواست نامعتبر است'})
 
 
+class AdvSearchViewSet(generics.ListAPIView):
+    """
+    API endpoint that list Search results.
+    """
+    queryset = Book.objects.all()
+    permission_classes = (book_permissions.IsAuthenticatedOrReadOnly,)
+    authentication_classes = (TokenAuthentication,)
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
+    Method_Allowed = ['GET']
+
+    def get(self, request):
+        # Return all books
+        query = request.GET.get('search')
+        if query:
+            # books = Book.objects.filter(title__icontains=query)[:10]
+            books = Book.objects.filter(Q(title__icontains=query) | Q(title__startswith=query))
+            serializer = MinBookSerializer(books, many=True)
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'error': 'درخواست نامعتبر است'})
+
+
 class ReadersOfBook(generics.ListAPIView):
     """
     API endpoint that list readers of a book.
