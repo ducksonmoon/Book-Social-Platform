@@ -155,6 +155,7 @@ class BookSerializer(serializers.ModelSerializer):
             'url',
             'raw_data',
             'title',
+            'subtitle',
             'slug', 
             'authors', 
             'translators', 
