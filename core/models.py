@@ -511,3 +511,14 @@ class ReportBook(models.Model):
 
     def __str__(self):
         return self.book.title
+
+
+class CategoryPosts(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField(blank=True, null=True)
+    url = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='category_posts/', blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name

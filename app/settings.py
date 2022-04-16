@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'info.apps.InfoConfig',
     'accounts.apps.AccountsConfig',
     'web.apps.WebConfig',
+    'main.apps.MainConfig',
     
     # Third-parties:
     'drf_yasg',
