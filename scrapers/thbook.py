@@ -306,7 +306,7 @@ def main():
         'بیدگل', 'کرگدن', 'پارسه', 'افق', 'تاش', 'اطراف',
         'آریاناقلم', 'آریانا قلم', 'دف', 'کارنامه', 'نی',
     ]
-    urls = open(dir + "/books-urls.txt").read().split("\n")
+    urls = open(dir + "/book-urls.txt").read().split("\n")
     # book-urls
     for url in urls:
         r = collect(url)
@@ -324,11 +324,9 @@ def main():
                 book.pages = int(r["pagesCount"])
             except:
                 pass
- 
 
             if r["translator"] == None:
-                pass
-
+                continue
             elif type(r["translator"]) != list:
                 r["translator"] = [r["translator"]]
 
@@ -356,7 +354,7 @@ def main():
 
 
             if r["author"] == None:
-                pass
+                continue
 
             elif type(r["author"]) != list:
                 r["author"] = [r["author"]]
@@ -394,7 +392,7 @@ def main():
 
             
             if r["coverType"] == None:
-                pass
+                continue
             elif CoverType.objects.filter(name=r["coverType"]).count() > 0:
                 book.cover_type = CoverType.objects.get(name=r["coverType"])
             else:
@@ -405,7 +403,7 @@ def main():
                 book.cover_type = cover_type
             
             if r["sizeType"] == None:
-                pass
+                continue
             elif Size.objects.filter(name=r["sizeType"]).count() > 0:
                 book.size = Size.objects.get(name=r["sizeType"])
             else:
