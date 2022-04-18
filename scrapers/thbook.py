@@ -303,15 +303,14 @@ def main():
         'بیدگل', 'کرگدن', 'پارسه', 'افق', 'تاش', 'اطراف',
         'آریاناقلم', 'آریانا قلم', 'دف', 'کارنامه', 'نی',
     ]
-    urls = open(dir + "/test-urls.txt").read().split("\n")
+    urls = open(dir + "/book-urls.txt").read().split("\n")
     # book-urls
     for url in urls:
         r = collect(url)
-        print(r)
         if r['publisher'] in existed_publishers:
-            pass
+            continue
         elif Book.objects.filter(isbn=r["isbn"].strip()).count() > 0:
-            pass
+            continue
         else:
             book = Book(
                 title=r["title"],
@@ -323,7 +322,9 @@ def main():
             except:
                 pass
  
-            if type(r["translator"]) == list:
+            if r["translator"] == None:
+                pass
+            elif type(r["translator"]) == list:
                 for t in r['translator']:
                     t = t.strip()
                     if Translator.objects.filter(name=t).count() > 0:
@@ -344,7 +345,9 @@ def main():
                     translator.save()
                 book.translators.add(translator)
 
-            if type(r["author"]) == list:
+            if r["author"] == None:
+                pass
+            elif type(r["author"]) == list:
                 for a in r['author']:
                     a = a.strip()
                     if Author.objects.filter(name=a).count() > 0:
@@ -374,7 +377,11 @@ def main():
                     )
                     publisher.save()
                     book.publisher = publisher
-            if CoverType.objects.filter(name=r["coverType"]).count() > 0:
+
+            
+            if r["coverType"] == None:
+                pass
+            elif CoverType.objects.filter(name=r["coverType"]).count() > 0:
                 book.cover_type = CoverType.objects.get(name=r["coverType"])
             else:
                 cover_type = CoverType(
@@ -382,7 +389,10 @@ def main():
                 )
                 cover_type.save()
                 book.cover_type = cover_type
-            if Size.objects.filter(name=r["sizeType"]).count() > 0:
+            
+            if r["sizeType"] == None:
+                pass
+            elif Size.objects.filter(name=r["sizeType"]).count() > 0:
                 book.size = Size.objects.get(name=r["sizeType"])
             else:
                 size = Size(
@@ -398,6 +408,7 @@ def main():
                 book.cover.save(r["coverUrl"].split("/")[-1], File(image_file))
             except Exception as e:
                 print(e)
+                pass
             
             book.source = "30book"
             book.source_link = r["url"]
