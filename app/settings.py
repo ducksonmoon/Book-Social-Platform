@@ -58,7 +58,8 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'web.apps.WebConfig',
     'main.apps.MainConfig',
-    
+    'scrapers.apps.ScrapersConfig',
+
     # Third-parties:
     'drf_yasg',
     'corsheaders',

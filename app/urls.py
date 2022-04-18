@@ -59,6 +59,8 @@ urlpatterns = [
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
 
     path('webapp/', include('web.urls')),
+    path('scrapers/', include('scrapers.urls')),
+
     # Reset Password
     path('', include ('user_utils.urls')),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='main/password/password_reset_done.html'), name='password_reset_done'),
