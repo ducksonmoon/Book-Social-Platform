@@ -39,13 +39,15 @@ def log_error(e):
 
 def log_actions(action):
     print(action)
+    """
+
     dir = os.path.dirname(os.path.abspath(__file__))
     log = open(dir + "/temp/requests.log", "a")
     log.write(
         "{}: - {}\n".format(time.strftime("%Y-%m-%d %H:%M:%S"), action)
         )
     log.close()
-
+    """
 def simple_get(url):
     """
     Attempts to get the content at `url` by making an HTTP GET request.
@@ -74,13 +76,14 @@ class Crawl:
 
     def log_actions(self, action):
         print(action)
+        """
         dir = os.path.dirname(os.path.abspath(__file__))
-
         log = open(dir+"/temp/requests.log", "a")
         log.write(
             "{}: - {}\n".format(time.strftime("%Y-%m-%d %H:%M:%S"), action)
             )
         log.close()
+        """
 
     def is_good_response(self, resp):
         """
@@ -322,51 +325,62 @@ def main():
             except:
                 pass
  
+
             if r["translator"] == None:
                 pass
-            elif type(r["translator"]) == list:
-                for t in r['translator']:
-                    t = t.strip()
-                    if Translator.objects.filter(name=t).count() > 0:
-                        translator = Translator.objects.get(name=t)
-                    else:
-                        translator = Translator(
-                            name=t,
-                        )
-                        translator.save()
-                    book.translators.add(translator)
-            else:
-                if Translator.objects.filter(name=r["translator"]).count() > 0:
-                    translator = Translator.objects.get(name=r["translator"])
-                else:
-                    translator = Translator(
-                        name=r["translator"],
-                    )
+
+            elif type(r["translator"]) != list:
+                r["translator"] = [r["translator"]]
+
+            for a in r["translator"]:
+                a = a.strip()
+                query = Translator.objects.filter(name=a)
+                if query.count() == 0:
+                    translator = Translator(name=a)
                     translator.save()
-                book.translators.add(translator)
+                    book.translators.add(translator)
+                elif query.count() == 1:
+                    author = Translator.objects.get(name=a)
+                    book.translators.add(author)
+                elif query.count() > 1:
+                # except MultipleObjectsReturned: merge authors
+                    first = query.first()
+                    for a in query:
+                        if a.id != first.id:
+                            for b in a.books.all():
+                                b.translator.remove(a)
+                                b.translator.add(first)
+                                b.save()
+                            a.delete()
+                    book.translators.add(first)
+
 
             if r["author"] == None:
                 pass
-            elif type(r["author"]) == list:
-                for a in r['author']:
-                    a = a.strip()
-                    if Author.objects.filter(name=a).count() > 0:
-                        author = Author.objects.get(name=a)
-                    else:
-                        author = Author(
-                            name=a,
-                        )
-                        author.save()
-                    book.authors.add(author)     
-            else:
-                if Author.objects.filter(name=r["author"]).count() > 0:
-                    author = Author.objects.get(name=r["author"])
-                else:
-                    author = Author(
-                        name=r["author"],
-                    )
+
+            elif type(r["author"]) != list:
+                r["author"] = [r["author"]]
+
+            for a in r['author']:
+                a = a.strip()
+                query = Author.objects.filter(name=a)
+                if query.count() == 0:
+                    author = Author(name=a)
                     author.save()
-                book.authors.add(author)
+                    book.authors.add(author)
+                elif query.count() == 1:
+                    author = Author.objects.get(name=a)
+                    book.authors.add(author)
+                elif query.count() > 1:
+                    first = query.first()
+                    for a in query:
+                        if a.id != first.id:
+                            for b in a.books.all():
+                                b.authors.remove(a)
+                                b.authors.add(first)
+                                b.save()
+                            a.delete()
+                    book.authors.add(first)
 
             if r["publisher"] != None:
                 if Publisher.objects.filter(name=r["publisher"]).count() > 0:
