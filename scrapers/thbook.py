@@ -303,7 +303,7 @@ def main():
         'بیدگل', 'کرگدن', 'پارسه', 'افق', 'تاش', 'اطراف',
         'آریاناقلم', 'آریانا قلم', 'دف', 'کارنامه', 'نی',
     ]
-    urls = open(dir + "/book-urls.txt").read().split("\n")
+    urls = open(dir + "/test-urls.txt").read().split("\n")
     # book-urls
     for url in urls:
         r = collect(url)
