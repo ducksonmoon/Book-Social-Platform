@@ -105,8 +105,12 @@ class BookSerializer(serializers.ModelSerializer):
     cover = serializers.SerializerMethodField()
     def get_cover(self, obj):
         base_url = settings.BASE_URL
-        return base_url + obj.cover.url
-
+        if obj.cover:
+            url = base_url + obj.cover.url
+        else:
+            url = base_url + '/media/covers/default.png'
+        return url
+        
     rate = serializers.SerializerMethodField()
     def get_rate(self, obj):
         return 0.0
@@ -213,10 +217,12 @@ class MinBookSerializer(serializers.ModelSerializer):
     cover = serializers.SerializerMethodField()
     def get_cover(self, obj):
         base_url = settings.BASE_URL
-        try:
-            return base_url + obj.cover.url
-        except:
-            return None
+        if obj.cover:
+            url = base_url + obj.cover.url
+        else:
+            url = base_url + '/media/covers/default.png'
+        return url
+        
 
     rate = serializers.SerializerMethodField()
     def get_rate(self, obj):

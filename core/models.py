@@ -362,7 +362,7 @@ class Book(models.Model):
     translators = models.ManyToManyField(Translator, related_name='books', blank=True)
     publisher = models.ForeignKey(Publisher, related_name='books', on_delete=models.CASCADE, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    cover = models.ImageField(upload_to='covers/', blank=True, null=True, default='covers/default.png')
+    cover = models.ImageField(upload_to='covers/', blank=True, null=True,)
     pages = models.IntegerField(default=0, blank=True, null=True)
     isbn = models.CharField(max_length=255, blank=True, null=True)
     size = models.ForeignKey('Size', on_delete=models.SET_NULL, blank=True, null=True)
@@ -377,6 +377,7 @@ class Book(models.Model):
     user_readers = models.ManyToManyField(User, related_name='reders_books', blank=True)
     user_liked = models.ManyToManyField(User, related_name='liked_books', blank=True)
     reviews = models.ManyToManyField(Review, related_name='books', blank=True)
+    source = models.CharField(max_length=255, blank=True, null=True)
 
     def rate_book(self, user, rate):
         if user in User.objects.all():
@@ -391,21 +392,22 @@ class Book(models.Model):
 
         if not self.slug:  
             # Rename image to random name
-            name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12)) + '.' + self.cover.name.split('.')[-1]
-            # check not exist cover name
-            im = Image.open(self.cover)
-            output = BytesIO()
-            # Resize/modify the image to book cover size
-            im.thumbnail((1200, 300), Image.ANTIALIAS)
-            im.convert('RGB').save(output, format='JPEG', quality=100)
-            output.seek(0)
-            # change the imagefield value to be the newley modifed image value
-            self.cover = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.cover.name.split('.')[0], 'image/jpeg',
-                                            sys.getsizeof(output), None)
+            if self.cover:
+                name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(12)) + '.' + self.cover.name.split('.')[-1]
+                # check not exist cover name
+                im = Image.open(self.cover)
+                output = BytesIO()
+                # Resize/modify the image to book cover size
+                im.thumbnail((1200, 300), Image.ANTIALIAS)
+                im.convert('RGB').save(output, format='JPEG', quality=100)
+                output.seek(0)
+                # change the imagefield value to be the newley modifed image value
+                self.cover = InMemoryUploadedFile(output, 'ImageField', "%s.jpg" % self.cover.name.split('.')[0], 'image/jpeg',
+                                                sys.getsizeof(output), None)
 
-            while Book.objects.filter(cover=name).exists():
-                name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(22)) + '.' + self.cover.name.split('.')[-1]
-            self.cover.name = name
+                while Book.objects.filter(cover=name).exists():
+                    name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(22)) + '.' + self.cover.name.split('.')[-1]
+                self.cover.name = name
 
             # Slugify title
             # Random 6 char slug
