@@ -378,6 +378,7 @@ class Book(models.Model):
     user_liked = models.ManyToManyField(User, related_name='liked_books', blank=True)
     reviews = models.ManyToManyField(Review, related_name='books', blank=True)
     source = models.CharField(max_length=255, blank=True, null=True)
+    source_link = models.CharField(max_length=255, blank=True, null=True)
 
     def rate_book(self, user, rate):
         if user in User.objects.all():

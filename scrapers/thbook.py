@@ -150,32 +150,32 @@ def prosessPage_30book(url):
     if "نویسنده:" in text:
         author = re.findall(r'نویسنده:[^\n]+', text)
         if len(author) == 0:
-            author = "Unknown"
+            author = None
         else:
             author = author[0].replace("نویسنده:", "").strip()
     elif "نویسندگان:" in text:
         author = re.findall(r'نویسندگان:[^\n]+', text)
         if len(author) == 0:
-            author = "Unknown"
+            author = None
         else:
             author = author[0].replace("نویسندگان:", "").strip()
         temps = re.findall(r'{0}[^\n]+'.format(author.split()[0]), text)
         # if any contains ، select and split it
         if len(author) == 0:
-            author = "Unknown"
+            author = None
         else:
             for i in temps:
                 if "،" in i:
                     author = i.split("،")
                     break
     else:
-        author = "Unknown"
+        author = None
 
 
     # title: It starts with خرید کتاب and ends with اثر
     title = re.findall(r'خرید کتاب[^\n]+اثر', text)
     if len(title) == 0:
-        title = "Unknown"
+        title = None
     else:
         title = title[0].replace("خرید کتاب", "").replace("اثر", "")
     # Translator: If starts with مترجم:
@@ -184,43 +184,43 @@ def prosessPage_30book(url):
     if "مترجم:" not in text:
         translator = None
     elif len(translator) == 0:
-        translator = "Unknown"
+        translator = None
     else:
         translator = translator[0].replace("مترجم:", "").strip()
     """
     if "مترجم:" in text:
         translator = re.findall(r'مترجم:[^\n]+', text)
         if len(translator) == 0:
-            translator = "Unknown"
+            translator = None
         else:
             translator = translator[0].replace("مترجم:", "").strip()
     elif "مترجمان:" in text:
         translator = re.findall(r'مترجمان:[^\n]+', text)
         if len(translator) == 0:
-            translator = "Unknown"
+            translator = None
         else:
             translator = translator[0].replace("مترجمان:", "").strip()
         temps = re.findall(r'{0}[^\n]+'.format(translator.split()[0]), text)
         # if any contains ، select and split it
         if len(translator) == 0:
-            translator = "Unknown"
+            translator = None
         else:
             for i in temps:
                 if "،" in i:
                     translator = i.split("،")
                     break
     else:
-        translator = "Unknown"
+        translator = None
     # ISBN: find number between 10 and 13 digits
     isbn = re.findall(r'\d{10,13}', text)
     if len(isbn) == 0:
-        isbn = "Unknown"
+        isbn = None
     else:
         isbn = isbn[0]
     # Publisher: Is starts with نشر: and new line after it
     publisher = re.findall(r'نشر:\n[^\n]+', text)
     if len(publisher) == 0:
-        publisher = "Unknown"
+        publisher = None
     else:
         publisher = publisher[0].replace("نشر:", "").replace("\n", "")
     
@@ -228,7 +228,7 @@ def prosessPage_30book(url):
         "شومیز", "کاغذی", "گالینگور", "سخت",
     ]
     # If any of the coverTypes in the text assign it to coverType
-    coverType = "Unknown"
+    coverType = None
     if "جلد کتاب" in text:
         for c in coverTypes:
             cover = re.findall(r'{0}\n'.format(c), text)
@@ -243,7 +243,7 @@ def prosessPage_30book(url):
         "خشتی کوچک", "خشتی بزرگ", "جیبی کوچک", 
     ]
     # If any of the sizeTypes in the text assign it to sizeType
-    sizeType = "Unknown"
+    sizeType = None
     if "قطع کتاب" in text:
         for s in sizeTypes:
             size = re.findall(r'{0}\n'.format(s), text)
@@ -254,7 +254,7 @@ def prosessPage_30book(url):
     # Pages Count: is numbers before صفحه
     pagesCount = re.findall(r'\d+ صفحه', text)
     if len(pagesCount) == 0:
-        pagesCount = "Unknown"
+        pagesCount = None
     else:
         pagesCount = pagesCount[0].replace("صفحه", "")
     # Code after book/ in url
@@ -365,7 +365,7 @@ def main():
                     author.save()
                 book.authors.add(author)
 
-            if r["publisher"] != "Unknown":
+            if r["publisher"] != None:
                 if Publisher.objects.filter(name=r["publisher"]).count() > 0:
                     book.publisher = Publisher.objects.get(name=r["publisher"])
                 else:
@@ -400,6 +400,7 @@ def main():
                 print(e)
             
             book.source = "30book"
+            book.source_link = r["url"]
             book.save()
             crawl.log_actions("New book added: {}".format(r["title"]))
         """
