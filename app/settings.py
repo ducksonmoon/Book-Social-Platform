@@ -100,6 +100,15 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:8000',
 )
 
+CORS_ALLOW_METHODS = [
+  "DELETE",
+  "GET",
+  "OPTIONS",
+  "PATCH",
+  "POST",
+  "PUT",
+]
+
 AUTHENTICATION_BACKENDS = [
     # Used for default signin such as loggin into admin panel.
     'django.contrib.auth.backends.ModelBackend', 
