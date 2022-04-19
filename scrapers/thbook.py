@@ -75,7 +75,7 @@ class Crawl:
         print(e)
 
     def log_actions(self, action):
-        print(action)
+        print('\x1b[6;30;42m' + action + '\x1b[0m', end='\n')
         """
         dir = os.path.dirname(os.path.abspath(__file__))
         log = open(dir+"/temp/requests.log", "a")
@@ -425,7 +425,10 @@ def main():
             book.source = "30book"
             book.source_link = r["url"]
             book.save()
+            print(r)
             crawl.log_actions("New book added: {}".format(r["title"]))
+            # stdout r['title']
+
         """
         # add dict to book-info.json
         with open(dir + "/temp/book-info.json", "a") as f:
