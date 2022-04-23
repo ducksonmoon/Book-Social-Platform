@@ -1,5 +1,6 @@
 from core.models import Book
 from . import thbook
+from . import tasks
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -39,5 +40,6 @@ def index(request):
 
 def runfunction(request):
     if request.user.is_superuser:
-        thbook.main()
+        tasks.add.delay(1, 2)
+        # thbook.main()
         return HttpResponse("Fetching data from the web...")

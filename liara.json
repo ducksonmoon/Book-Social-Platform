@@ -4,8 +4,5 @@
         "name": "data",
         "mountTo": "media"
       }
-    ],
-    "cron": [
-      "1 * * * * bash /usr/src/app/scripts/fetcher.sh"
     ]
   }

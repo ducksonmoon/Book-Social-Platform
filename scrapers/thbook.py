@@ -310,9 +310,12 @@ def main():
     # book-urls
     for url in urls:
         r = collect(url)
+        print(r)
         if r['publisher'] in existed_publishers:
+            print('\x1b[6;30;41m' + "exist." + '\x1b[0m', end='\n')
             continue
         elif Book.objects.filter(isbn=r["isbn"].strip()).count() > 0:
+            print('\x1b[6;30;41m' + "exist." + '\x1b[0m', end='\n')
             continue
         else:
             book = Book(
@@ -425,7 +428,6 @@ def main():
             book.source = "30book"
             book.source_link = r["url"]
             book.save()
-            print(r)
             crawl.log_actions("New book added: {}".format(r["title"]))
             # stdout r['title']
 
