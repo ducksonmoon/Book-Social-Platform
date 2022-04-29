@@ -1,4 +1,3 @@
-from turtle import title
 import jdatetime
 
 from rest_framework import viewsets, mixins, status, views, generics, permissions
@@ -327,7 +326,7 @@ class PublisherBooks(generics.ListAPIView):
     """
     API endpoint that list books of a publisher.
     """
-    serializer_class = BookSerializer
+    serializer_class = MinBookSerializer
     permission_classes = (book_permissions.IsAuthenticatedOrReadOnly,)
     authentication_classes = (TokenAuthentication,)
     queryset = Book.objects.all()
@@ -340,5 +339,5 @@ class PublisherBooks(generics.ListAPIView):
         books = Book.objects.filter(publisher=publisher)
         page = self.paginate_queryset(books)
         if page is not None:
-            serializer = BookSerializer(page, many=True,)
+            serializer = self.serializer_class(page, many=True,)
             return self.get_paginated_response(serializer.data)
