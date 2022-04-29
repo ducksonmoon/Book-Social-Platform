@@ -327,8 +327,6 @@ class PublisherBooks(generics.ListAPIView):
     API endpoint that list books of a publisher.
     """
     serializer_class = MinBookSerializer
-    permission_classes = (book_permissions.IsAuthenticatedOrReadOnly,)
-    authentication_classes = (TokenAuthentication,)
     queryset = Book.objects.all()
     pagination_class = SmallPagesPagination
     ALLOWED_METHODS = ('GET',)
@@ -337,6 +335,25 @@ class PublisherBooks(generics.ListAPIView):
         # Return all readers of a book
         publisher = get_object_or_404(Publisher, name=name)
         books = Book.objects.filter(publisher=publisher)
+        page = self.paginate_queryset(books)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True,)
+            return self.get_paginated_response(serializer.data)
+
+
+class CategoryBooks(generics.ListAPIView):
+    """
+    API endpoint that list books of a publisher.
+    """
+    serializer_class = MinBookSerializer
+    queryset = Book.objects.all()
+    pagination_class = SmallPagesPagination
+    ALLOWED_METHODS = ('GET',)
+
+    def get(self, request, name):
+        # Return all readers of a book
+        publisher = get_object_or_404(CategoryPosts, name=name)
+        books = publisher.books.all()
         page = self.paginate_queryset(books)
         if page is not None:
             serializer = self.serializer_class(page, many=True,)

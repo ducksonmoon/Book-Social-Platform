@@ -14,4 +14,5 @@ urlpatterns = [
     path('search/adv/', views.AdvSearchViewSet.as_view(), name='search_adv'),
     # Publishers
     path('publisher/<name>/', views.PublisherBooks.as_view(), name='publisher_books'),
+    path('category/<name>/', views.CategoryBooks.as_view(), name='category_books'),
 ]
