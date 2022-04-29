@@ -3,5 +3,6 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.CategoryPostsViewSet.as_view({'get': 'list'}), name='category-posts'),
+    path('posts/', views.CategoryPostsViewSet.as_view({'get': 'list'}), name='category-posts'),
+    path('publishers/', views.PublicationPostsViewSet.as_view({'get': 'list'}), name='publishers'),
 ]
