@@ -521,7 +521,7 @@ class ReportBook(models.Model):
 class CategoryPosts(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True, null=True)
-    url = models.CharField(max_length=255)
+    books = models.ManyToManyField(Book, related_name='category_posts', blank=True)
     image = models.ImageField(upload_to='category_posts/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
