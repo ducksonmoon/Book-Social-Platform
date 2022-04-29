@@ -1,8 +1,9 @@
-from core.models import CategoryPosts, Publisher
-from .serializers import *
-
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
+
+from core.models import BookList, CategoryPosts, Publisher
+from book.serializers import MinBookSerializer
+from .serializers import *
 
 
 class CategoryPostsViewSet(viewsets.ModelViewSet):
@@ -25,3 +26,16 @@ class PublicationPostsViewSet(viewsets.ModelViewSet):
     queryset = Publisher.objects.filter(is_show=True)
     serializer_class = PublisherSerializer
     http_method_names = ['get']
+
+
+class MainBookListViewSet(viewsets.ModelViewSet):
+    class PagesPagination(PageNumberPagination):  
+        page_size = 15
+        page_size_query_param = 'page_size'
+
+    pagination_class = PagesPagination
+    try: queryset = BookList.objects.get(name='main').books.all()
+    except: queryset = BookList.objects.none()
+    serializer_class = MinBookSerializer
+    http_method_names = ['get']
+
