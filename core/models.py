@@ -1,4 +1,3 @@
-from pyexpat import model
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -15,6 +14,7 @@ import random
 import string
 from io import BytesIO
 import sys
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -436,7 +436,7 @@ class BookList(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    books = models.ManyToManyField(Book, related_name='book_lists', blank=True, null=True)
+    books = models.ManyToManyField(Book, related_name='book_lists',)
     date_created = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
     slug = models.SlugField(unique=True, blank=True, null=True)
