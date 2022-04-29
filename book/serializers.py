@@ -68,8 +68,9 @@ class BookSerializer(serializers.ModelSerializer):
     related_friend_count = serializers.SerializerMethodField()
     def get_related_friend_count(self, obj):
         # count = 0
-        user = self.context['request'].user            
-        if user.is_authenticated:
+        
+        try:
+            user = self.context['request'].user
             """
             for friend in user.userprofile.following.all():
                 if obj in friend.userprofile.readed_books.all():
@@ -77,7 +78,7 @@ class BookSerializer(serializers.ModelSerializer):
             """
             books = user.userprofile.related_following_to_book(obj)
             return len(books)
-        else:
+        except:
             return 0
 
 
