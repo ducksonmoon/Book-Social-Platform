@@ -12,4 +12,6 @@ urlpatterns = [
     path('<slug:slug>/review/<int:pk>/', views.ReviewDetailViewSet.as_view(), name='review_detail'),
     path('search/title/', views.SearchViewSet.as_view(), name='search'),
     path('search/adv/', views.AdvSearchViewSet.as_view(), name='search_adv'),
+    # Publishers
+    path('publisher/<name>/', views.PublisherBooks.as_view(), name='publisher_books'),
 ]

@@ -321,3 +321,24 @@ class ReadersOfBook(generics.ListAPIView):
         if page is not None:
             serializer = UserForBookSerializer(page, many=True, context={'book': book})
             return self.get_paginated_response(serializer.data)
+
+
+class PublisherBooks(generics.ListAPIView):
+    """
+    API endpoint that list books of a publisher.
+    """
+    serializer_class = BookSerializer
+    permission_classes = (book_permissions.IsAuthenticatedOrReadOnly,)
+    authentication_classes = (TokenAuthentication,)
+    queryset = Book.objects.all()
+    pagination_class = SmallPagesPagination
+    ALLOWED_METHODS = ('GET',)
+
+    def get(self, request, name):
+        # Return all readers of a book
+        publisher = get_object_or_404(Publisher, name=name)
+        books = Book.objects.filter(publisher=publisher)
+        page = self.paginate_queryset(books)
+        if page is not None:
+            serializer = BookSerializer(page, many=True,)
+            return self.get_paginated_response(serializer.data)
