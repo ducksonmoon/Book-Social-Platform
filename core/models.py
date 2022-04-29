@@ -332,6 +332,8 @@ class Translator(models.Model):
 
 class Publisher(models.Model):
     name = models.CharField(max_length=150)
+    logo = models.ImageField(upload_to='publishers/', null=True, blank=True)
+    is_show = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
