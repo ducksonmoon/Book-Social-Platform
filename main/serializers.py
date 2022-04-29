@@ -20,7 +20,7 @@ class CategoryPostsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CategoryPosts
-        fields = '__all__'
+        fields = ('link', 'image', 'name', 'is_active')
 
 
 class PublisherSerializer(serializers.ModelSerializer):
@@ -38,4 +38,4 @@ class PublisherSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Publisher
-        fields = '__all__'
+        fields = ('link', 'image', 'name', 'is_active')
