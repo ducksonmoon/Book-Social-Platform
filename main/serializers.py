@@ -9,10 +9,14 @@ class CategoryPostsSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     def get_image(self, obj):
         base_url = settings.BASE_URL
-        try:
-            return base_url + obj.image.url
-        except:
-            return None
+        try: return base_url + obj.image.url
+        except: return None
+
+    link = serializers.SerializerMethodField()
+    def get_link(self, obj):
+        url = reverse('book:category_books', kwargs={'name': obj.name})
+        base = settings.BASE_URL
+        return base + url
 
     class Meta:
         model = CategoryPosts
