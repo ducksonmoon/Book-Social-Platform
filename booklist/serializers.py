@@ -12,7 +12,8 @@ class BookListSerializer(serializers.ModelSerializer):
     user_avatar = serializers.SerializerMethodField()
     def get_user_avatar(self, obj):
         base_url = settings.BASE_URL
-        return base_url + obj.user.userprofile.avatar.url
+        try: return base_url + obj.user.userprofile.avatar.url
+        except: return None
 
     books = serializers.SerializerMethodField()
     def get_books(self, obj):

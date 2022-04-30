@@ -29,7 +29,7 @@ class BookListViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class BookListUpdateView(generics.RetrieveUpdateDestroyAPIView):
+class PublicBookListView(generics.RetrieveAPIView):
     queryset = BookList.objects.all()
     serializer_class = BookListSerializer
 
