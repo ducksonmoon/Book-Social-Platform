@@ -38,7 +38,7 @@ class PublisherSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Publisher
-        fields = ('link', 'logo', 'name', 'is_active')
+        fields = ('link', 'logo', 'name',)
 
 
 class BannersSerailzer(serializers.ModelSerializer):
