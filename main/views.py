@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 
-from core.models import BookList, CategoryPosts, Publisher
+from core.models import *
 from book.serializers import MinBookSerializer
 from .serializers import *
 
@@ -39,3 +39,8 @@ class MainBookListViewSet(viewsets.ModelViewSet):
     serializer_class = MinBookSerializer
     http_method_names = ['get']
 
+
+class BannersViewSet(viewsets.ModelViewSet):
+    queryset = Baners.objects.all()
+    serializer_class = BannersSerailzer
+    http_method_names = ['get']

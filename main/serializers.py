@@ -39,3 +39,21 @@ class PublisherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Publisher
         fields = ('link', 'image', 'name', 'is_active')
+
+
+class BannersSerailzer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    def get_image(self, obj):
+        base_url = settings.BASE_URL
+        try: return base_url + obj.image.url
+        except: return None
+
+    related_list = serializers.SerializerMethodField()
+    def get_related_list(self, obj):
+        url = reverse('booklist:book-detail', kwargs={'slug': obj.related_list.slug})
+        base = settings.BASE_URL
+        return base + url
+
+    class Meta:
+        model = CategoryPosts
+        fields = ('image', 'name', 'is_active', 'related_list')
