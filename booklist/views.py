@@ -32,17 +32,11 @@ class BookListViewSet(viewsets.ModelViewSet):
 class BookListUpdateView(generics.RetrieveUpdateDestroyAPIView):
     queryset = BookList.objects.all()
     serializer_class = BookListSerializer
-    permission_classes = (IsOwnerOrReadOnly, IsAuthenticated)
-    authentication_classes = (TokenAuthentication,)
 
     def get_object(self):
         queryset = self.get_queryset()
         obj = get_object_or_404(queryset, slug=self.kwargs['slug'])
         return obj
-
-    def delete(self, request, slug, format=None):
-        book_list = get_object_or_404(BookList, slug=slug).delete()
-        return Response(status=status.HTTP_200_OK, data={'message': 'انجام شد'})
 
 
 # Add specific book to a list
