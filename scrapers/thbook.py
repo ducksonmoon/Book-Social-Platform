@@ -418,15 +418,15 @@ def main():
             
             if r["sizeType"] == None:
                 continue
-            elif Size.objects.filter(name=r["sizeType"]).count() > 0:
-                book.size = Size.objects.get(name=r["sizeType"])
-            else:
+            elif Size.objects.filter(name=r["sizeType"]).count() == 0:
                 size = Size(
                     name=r["sizeType"],
                 )
                 size.save()
                 book.size = size
-        
+            elif Size.objects.filter(name=r["sizeType"]).count() == 1:
+                book.size = Size.objects.get(name=r["sizeType"])
+
             try:
                 image = requests.get(r["coverUrl"], timeout=10)
                 image.raise_for_status()
