@@ -219,13 +219,13 @@ def prosessPage_30book(url):
     if len(isbn) == 0:
         isbn = None
     else:
-        isbn = isbn[0]
+        isbn = isbn[0].strip()
     # Publisher: Is starts with نشر: and new line after it
     publisher = re.findall(r'نشر:\n[^\n]+', text)
     if len(publisher) == 0:
         publisher = None
     else:
-        publisher = publisher[0].replace("نشر:", "").replace("\n", "")
+        publisher = publisher[0].replace("نشر:", "").replace("\n", "").strip()
     
     coverTypes = [
         "شومیز", "کاغذی", "گالینگور", "سخت",
@@ -259,20 +259,20 @@ def prosessPage_30book(url):
     if len(pagesCount) == 0:
         pagesCount = None
     else:
-        pagesCount = pagesCount[0].replace("صفحه", "")
+        pagesCount = pagesCount[0].replace("صفحه", "").strip()
     # Code after book/ in url
     code = re.findall(r'book/[^/]+/', url)
     code = code[0].replace("book/", "").replace("/", "")
     coverUrl = f"https://www.30book.com/Media/Book/{code}.jpg"
     info = {
-        "title": title.strip(),
+        "title": title,
         "author": author,
         "translator": translator,
-        "isbn": isbn.strip(),
-        "publisher": publisher.strip(),
+        "isbn": isbn,
+        "publisher": publisher,
         "coverType": coverType,
         "sizeType": sizeType,
-        "pagesCount": pagesCount.strip(),
+        "pagesCount": pagesCount,
         "url": url,
         "coverUrl": coverUrl,
     }
