@@ -323,13 +323,14 @@ def main():
                 isbn=r["isbn"].strip(),
             )
             book.save()
-            try:
-                book.pages = int(r["pagesCount"])
-            except:
+            if r["pagesCount"] == None:
                 pass
+            else:
+                try: book.pages = int(r["pagesCount"])
+                except: pass
 
             if r["translator"] == None:
-                continue
+                pass
             elif type(r["translator"]) != list:
                 r["translator"] = [r["translator"]]
 
@@ -357,7 +358,7 @@ def main():
 
 
             if r["author"] == None:
-                continue
+                pass
 
             elif type(r["author"]) != list:
                 r["author"] = [r["author"]]
@@ -406,7 +407,7 @@ def main():
                     book.save()
 
             if r["coverType"] == None:
-                continue
+                pass
             elif CoverType.objects.filter(name=r["coverType"]).count() > 0:
                 book.cover_type = CoverType.objects.get(name=r["coverType"])
             else:
@@ -417,7 +418,7 @@ def main():
                 book.cover_type = cover_type
             
             if r["sizeType"] == None:
-                continue
+                pass
             elif Size.objects.filter(name=r["sizeType"]).count() == 0:
                 size = Size(
                     name=r["sizeType"],
