@@ -384,16 +384,27 @@ def main():
                     book.authors.add(first)
 
             if r["publisher"] != None:
-                if Publisher.objects.filter(name=r["publisher"]).count() > 0:
-                    book.publisher = Publisher.objects.get(name=r["publisher"])
-                else:
-                    publisher = Publisher(
-                        name=r["publisher"],
-                    )
+                a = r["publisher"].strip()
+                query = Publisher.objects.filter(name=a)
+                if query.count() == 0:
+                    publisher = Publisher(name=a,)
                     publisher.save()
                     book.publisher = publisher
+                    book.save()
+                elif query.count() == 1:
+                    book.publisher = query.first()
+                    book.save()
+                else:
+                    first = query.first()
+                    for a in query:
+                        if a.id != first.id:
+                            for b in a.books.all():
+                                b.publisher = first
+                                b.save()
+                            a.delete()
+                    book.publisher = first
+                    book.save()
 
-            
             if r["coverType"] == None:
                 continue
             elif CoverType.objects.filter(name=r["coverType"]).count() > 0:
