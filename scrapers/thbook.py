@@ -334,28 +334,28 @@ def main():
             elif type(r["translator"]) != list:
                 r["translator"] = [r["translator"]]
 
-            for a in r["translator"]:
-                a = a.strip()
-                query = Translator.objects.filter(name=a)
-                if query.count() == 0:
-                    translator = Translator(name=a)
-                    translator.save()
-                    book.translators.add(translator)
-                elif query.count() == 1:
-                    author = Translator.objects.get(name=a)
-                    book.translators.add(author)
-                elif query.count() > 1:
-                # except MultipleObjectsReturned: merge authors
-                    first = query.first()
-                    for a in query:
-                        if a.id != first.id:
-                            for b in a.books.all():
-                                b.translator.remove(a)
-                                b.translator.add(first)
-                                b.save()
-                            a.delete()
-                    book.translators.add(first)
-
+            if r["translator"] != None:
+                for a in r["translator"]:
+                    a = a.strip()
+                    query = Translator.objects.filter(name=a)
+                    if query.count() == 0:
+                        translator = Translator(name=a)
+                        translator.save()
+                        book.translators.add(translator)
+                    elif query.count() == 1:
+                        author = Translator.objects.get(name=a)
+                        book.translators.add(author)
+                    elif query.count() > 1:
+                    # except MultipleObjectsReturned: merge authors
+                        first = query.first()
+                        for a in query:
+                            if a.id != first.id:
+                                for b in a.books.all():
+                                    b.translator.remove(a)
+                                    b.translator.add(first)
+                                    b.save()
+                                a.delete()
+                        book.translators.add(first)
 
             if r["author"] == None:
                 pass
