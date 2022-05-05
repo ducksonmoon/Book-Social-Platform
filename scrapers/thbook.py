@@ -336,7 +336,7 @@ def main():
             continue
         elif r['url'] == "":
             continue
-        elif not validate_publisher and r['publisher'] in existed_publishers:
+        elif not validate_publisher or r['publisher'] in existed_publishers:
             print('\x1b[6;30;41m' + "exist." + '\x1b[0m', end='\n')
             continue
         elif Book.objects.filter(source_link=r['url']).exists():
