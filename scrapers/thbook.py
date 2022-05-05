@@ -374,8 +374,8 @@ def main():
                     for a in query:
                         if a.id != first.id:
                             for b in a.books.all():
-                                b.translator.remove(a)
-                                b.translator.add(first)
+                                b.translators.remove(a)
+                                b.translators.add(first)
                                 b.save()
                             a.delete()
                     book.translators.add(first)
