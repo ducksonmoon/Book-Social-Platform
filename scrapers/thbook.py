@@ -1,5 +1,6 @@
 import json, re
 import time, sys, os
+from wsgiref import validate
 import requests
 from io import BytesIO
 
@@ -311,141 +312,170 @@ def main():
     for url in urls:
         r = collect(url)
         print(r)
-        if r['publisher'] in existed_publishers:
+        """
+        validate_publisher = r.get('publisher', None)
+        validate_isbn = r.get('isbn', None)
+        if not validate_publisher:
+            print('\x1b[6;30;41m' + "didn't found any publisher." + '\x1b[0m', end='\n')
+            continue
+        elif r['publisher'] in existed_publishers:
             print('\x1b[6;30;41m' + "exist." + '\x1b[0m', end='\n')
             continue
-        elif Book.objects.filter(isbn=r["isbn"].strip()).count() > 0:
+        if not validate_isbn:
+            if Book.objects.filter(title=r['title'], publisher=r['publisher']).exists():
+                print('\x1b[6;30;41m' + "exist by title." + '\x1b[0m', end='\n')
+                continue
+
+        elif Book.objects.filter(isbn=r["isbn"]).count() > 0:
             print('\x1b[6;30;41m' + "exist." + '\x1b[0m', end='\n')
             continue
+        """
+        validate_publisher = r.get('publisher', None)
+
+        if r == None:
+            continue
+        elif r['url'] == "":
+            continue
+        elif not validate_publisher and r['publisher'] in existed_publishers:
+            print('\x1b[6;30;41m' + "exist." + '\x1b[0m', end='\n')
+            continue
+        elif Book.objects.filter(source_link=r['url']).exists():
+            print('\x1b[6;30;41m' + "exist By URL." + '\x1b[0m', end='\n')
+            continue
+        book = Book(
+            title=r["title"].strip(),
+            isbn=r.get('isbn', "")
+        )
+        book.save()
+        if r["pagesCount"] == None:
+            pass
         else:
-            book = Book(
-                title=r["title"],
-                isbn=r["isbn"].strip(),
-            )
-            book.save()
-            if r["pagesCount"] == None:
-                pass
-            else:
-                try: book.pages = int(r["pagesCount"])
-                except: pass
+            try: book.pages = int(r["pagesCount"])
+            except: pass
 
-            if r["translator"] == None:
-                pass
-            elif type(r["translator"]) != list:
-                r["translator"] = [r["translator"]]
+        if r["translator"] == None:
+            pass
+        elif type(r["translator"]) != list:
+            r["translator"] = [r["translator"]]
 
-            if r["translator"] != None:
-                for a in r["translator"]:
-                    a = a.strip()
-                    query = Translator.objects.filter(name=a)
-                    if query.count() == 0:
-                        translator = Translator(name=a)
-                        translator.save()
-                        book.translators.add(translator)
-                    elif query.count() == 1:
-                        author = Translator.objects.get(name=a)
-                        book.translators.add(author)
-                    elif query.count() > 1:
-                    # except MultipleObjectsReturned: merge authors
-                        first = query.first()
-                        for a in query:
-                            if a.id != first.id:
-                                for b in a.books.all():
-                                    b.translator.remove(a)
-                                    b.translator.add(first)
-                                    b.save()
-                                a.delete()
-                        book.translators.add(first)
-
-            if r["author"] == None:
-                pass
-
-            elif type(r["author"]) != list:
-                r["author"] = [r["author"]]
-
-            for a in r['author']:
-                a = a.strip()
-                query = Author.objects.filter(name=a)
+        if r["translator"] != None:
+            for a in r["translator"]:
+                query = Translator.objects.filter(name=a)
                 if query.count() == 0:
-                    author = Author(name=a)
-                    author.save()
-                    book.authors.add(author)
+                    translator = Translator(name=a)
+                    translator.save()
+                    book.translators.add(translator)
                 elif query.count() == 1:
-                    author = Author.objects.get(name=a)
-                    book.authors.add(author)
+                    author = Translator.objects.get(name=a)
+                    book.translators.add(author)
                 elif query.count() > 1:
+                # except MultipleObjectsReturned: merge authors
                     first = query.first()
                     for a in query:
                         if a.id != first.id:
                             for b in a.books.all():
-                                b.authors.remove(a)
-                                b.authors.add(first)
+                                b.translator.remove(a)
+                                b.translator.add(first)
                                 b.save()
                             a.delete()
-                    book.authors.add(first)
+                    book.translators.add(first)
 
-            if r["publisher"] != None:
-                a = r["publisher"].strip()
-                query = Publisher.objects.filter(name=a)
-                if query.count() == 0:
-                    publisher = Publisher(name=a,)
-                    publisher.save()
-                    book.publisher = publisher
-                    book.save()
-                elif query.count() == 1:
-                    book.publisher = query.first()
-                    book.save()
-                else:
-                    first = query.first()
-                    for a in query:
-                        if a.id != first.id:
-                            for b in a.books.all():
-                                b.publisher = first
-                                b.save()
-                            a.delete()
-                    book.publisher = first
-                    book.save()
+        if r["author"] == None:
+            pass
 
-            if r["coverType"] == None:
-                pass
-            elif CoverType.objects.filter(name=r["coverType"]).count() > 0:
-                book.cover_type = CoverType.objects.get(name=r["coverType"])
+        elif type(r["author"]) != list:
+            r["author"] = [r["author"]]
+
+        for a in r['author']:
+            query = Author.objects.filter(name=a)
+            if query.count() == 0:
+                author = Author(name=a)
+                author.save()
+                book.authors.add(author)
+            elif query.count() == 1:
+                author = Author.objects.get(name=a)
+                book.authors.add(author)
+            elif query.count() > 1:
+                first = query.first()
+                for a in query:
+                    if a.id != first.id:
+                        for b in a.books.all():
+                            b.authors.remove(a)
+                            b.authors.add(first)
+                            b.save()
+                        a.delete()
+                book.authors.add(first)
+
+        if r["publisher"] != None:
+            a = r["publisher"]
+            query = Publisher.objects.filter(name=a)
+            if query.count() == 0:
+                publisher = Publisher(name=a,)
+                publisher.save()
+                book.publisher = publisher
+                book.save()
+            elif query.count() == 1:
+                book.publisher = query.first()
+                book.save()
             else:
-                cover_type = CoverType(
-                    name=r["coverType"],
-                )
-                cover_type.save()
-                book.cover_type = cover_type
-            
-            if r["sizeType"] == None:
-                pass
-            elif Size.objects.filter(name=r["sizeType"]).count() == 0:
-                size = Size(
-                    name=r["sizeType"],
-                )
-                size.save()
-                book.size = size
-            elif Size.objects.filter(name=r["sizeType"]).count() == 1:
-                book.size = Size.objects.get(name=r["sizeType"])
+                first = query.first()
+                for a in query:
+                    if a.id != first.id:
+                        for b in a.books.all():
+                            b.publisher = first
+                            b.save()
+                        a.delete()
+                book.publisher = first
+                book.save()
 
-            try:
-                image = requests.get(r["coverUrl"], timeout=10)
-                image.raise_for_status()
-                image_file = BytesIO(image.content)
-                book.cover.save(r["coverUrl"].split("/")[-1], File(image_file))
-            except Exception as e:
-                print(e)
-                pass
-            
-            book.source = "30book"
-            book.source_link = r["url"]
-            book.save()
-            crawl.log_actions("New book added: {}".format(r["title"]))
-            # stdout r['title']
+        if r["coverType"] == None:
+            pass
+        elif CoverType.objects.filter(name=r["coverType"]).count() > 0:
+            book.cover_type = CoverType.objects.get(name=r["coverType"])
+        else:
+            cover_type = CoverType(
+                name=r["coverType"],
+            )
+            cover_type.save()
+            book.cover_type = cover_type
+        
+        if r["sizeType"] == None:
+            pass
+        elif Size.objects.filter(name=r["sizeType"]).count() == 0:
+            size = Size(
+                name=r["sizeType"],
+            )
+            size.save()
+            book.size = size
+        elif Size.objects.filter(name=r["sizeType"]).count() == 1:
+            book.size = Size.objects.get(name=r["sizeType"])
 
-        """
-        # add dict to book-info.json
-        with open(dir + "/temp/book-info.json", "a") as f:
-            f.write(json.dumps(r, ensure_ascii=False) + "," + "\n")
-            f.flush()
-        """
+        try:
+            image = requests.get(r["coverUrl"], timeout=10)
+            image.raise_for_status()
+            image_file = BytesIO(image.content)
+            book.cover.save(r["coverUrl"].split("/")[-1], File(image_file))
+        except Exception as e:
+            print(e)
+            pass
+        
+        book.source = "30book"
+        book.source_link = r["url"]
+        book.save()
+        crawl.log_actions("New book added: {}".format(r["title"]))
+        # stdout r['title']
+
+    """
+    # add dict to book-info.json
+    with open(dir + "/temp/book-info.json", "a") as f:
+        f.write(json.dumps(r, ensure_ascii=False) + "," + "\n")
+        f.flush()
+    """
+
+
+# Decorator for main function if error occured print it
+def main_wrapper():
+    try:
+        main()
+    except Exception as e:
+        print(e)
