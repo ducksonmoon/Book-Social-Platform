@@ -330,11 +330,12 @@ def main():
             print('\x1b[6;30;41m' + "exist." + '\x1b[0m', end='\n')
             continue
         """
-        validate_publisher = r.get('publisher', None)
 
-        if r == None:
+
+        if r == None or not r:
             continue
-        elif r['url'] == "":
+        validate_publisher = r.get('publisher', None)
+        if r['url'] == "":
             continue
         elif not validate_publisher or r['publisher'] in existed_publishers:
             print('\x1b[6;30;41m' + "exist." + '\x1b[0m', end='\n')
