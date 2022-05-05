@@ -335,7 +335,10 @@ def main():
         if r == None or not r:
             continue
         validate_publisher = r.get('publisher', None)
+        validate_title = r.get('title', None)
         if r['url'] == "":
+            continue
+        elif r['title'] == "" or validate_title == None:
             continue
         elif not validate_publisher or r['publisher'] in existed_publishers:
             print('\x1b[6;30;41m' + "exist." + '\x1b[0m', end='\n')
