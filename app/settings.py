@@ -24,6 +24,7 @@ SECRET_KEY = 'oops-i-did-it-again.'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+SECURE_SSL_REDIRECT = True
 
 ALLOWED_HOSTS = [
     'https://nebig.iran.liara.run',
