@@ -534,6 +534,8 @@ class Baners(models.Model):
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='baners/', blank=True, null=True)
     related_list = models.ForeignKey(BookList, on_delete=models.CASCADE, blank=True, null=True)
+    # Choice of (slider1, slider2)
+    slider = models.CharField(max_length=150, choices=(('slider1', 'slider1'), ('slider2', 'slider2')), default='slider1')
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
