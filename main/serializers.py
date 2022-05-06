@@ -50,10 +50,15 @@ class BannersSerailzer(serializers.ModelSerializer):
 
     related_list = serializers.SerializerMethodField()
     def get_related_list(self, obj):
-        url = reverse('booklist:book-detail', kwargs={'slug': obj.related_list.slug})
-        base = settings.BASE_URL
-        return base + url
+        # url = reverse('booklist:book-detail', kwargs={'slug': obj.related_list.slug})
+        # base = settings.BASE_URL
+        return obj.related_list.slug # base + url
+    
+    # Slider is choices=(('slider1', 'slider1'), ('slider2', 'slider2'))
+    slider = serializers.SerializerMethodField()
+    def get_slider(self, obj):
+        return obj.slider
 
     class Meta:
         model = CategoryPosts
-        fields = ('image', 'name', 'is_active', 'related_list')
+        fields = ('image', 'name', 'slider', 'related_list')
