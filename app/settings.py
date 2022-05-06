@@ -24,23 +24,15 @@ SECRET_KEY = 'oops-i-did-it-again.'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-SECURE_SSL_REDIRECT = True
-APPEND_SLASH = True
 
+ALLOWED_HOSTS = ["*"]
 
-ALLOWED_HOSTS = [
-    'https://nebig.iran.liara.run',
-    'https://nebigapp.iran.liara.run',
-    'https://api.nebigapp.com',
-    'https://nebigapp.com',
-    'https://nebigapp.ir',
-    'https://pwa.nebigapp.com',
-    'https://pwa.nebigapp.ir',
-    'http://localhost',
-    'http://localhost:3000',
-    'http://localhost:8000',
-]
-
+"""
+    'https://nebig.iran.liara.run/',
+    'https://api.nebigapp.com/',
+    'localhost',
+    '127.0.0.1',
+"""
 
 # Application definition
 INSTALLED_APPS = [
@@ -91,12 +83,93 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
 ]
 
 # Cors Headers
+"""
+Access to XMLHttpRequest at 'https://api.nebigapp.com/user/me/' from origin 'https://pwa.nebigapp.ir' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+"""
+
+CORS_ORIGIN_WHITELIST = [
+    'https://nebig.iran.liara.run',
+    'https://api.nebigapp.com',
+    'localhost',
+    'http://127.0.0.1:8000',
+    'http://localhost:4200',
+    'http://localhost:8000',
+    'http://localhost:8080',
+    'http://localhost:3000',
+    'http://localhost:8081',
+    'https://pwa.nebigapp.ir',
+    'https://nebigapp.ir',
+    'https://nebigapp.iran.liara.run',
+    'https://api.nebigapp.ir',
+]
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = (
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'OPTIONS',
+    'HEAD',
+    'PATCH',
+)
+
+CORS_ALLOW_HEADERS = (
+    'XMLHttpRequest',
+    'Content-Type',
+    'Authorization',
+    'Origin',
+    'Accept',
+    'Accept-Encoding',
+    'Accept-Language',
+    'DNT',
+    'Cache-Control',
+    'Pragma',
+    'User-Agent',
+    'X-Requested-With',
+    'If-Modified-Since',
+    'If-None-Match',
+    'Connection',
+    'Upgrade-Insecure-Requests',
+    'Sec-Fetch-User',
+    'Sec-Fetch-Site',
+    'Sec-Fetch-Mode',
+    'Sec-Fetch-Dest',
+    'Sec-Fetch-Tainting',
+    'Accept-Ranges',
+    'Range',
+    'Referer',
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers',
+    'Access-Control-Allow-Origin',
+    'Access-Control-Allow-Credentials',
+    'Access-Control-Allow-Methods',
+    'Access-Control-Allow-Headers',
+    'Access-Control-Expose-Headers',
+    'Access-Control-Max-Age',
+    
+    # Flutter
+    'X-Flutter-Version',
+    'X-Flutter-Platform',
+    'X-Flutter-Locale',
+    'X-Flutter-Locale-Country',
+    'X-Flutter-Locale-Language',
+    'X-Flutter-Locale-Script',
+    'X-Flutter-Locale-Variant',
+    'X-Flutter-Locale-Extension',
+    'X-Flutter-Locale-Short',
+    'X-Flutter-Locale-Short-Extension',
+    'X-Flutter-Locale-Short-Script',
+    'X-Flutter-Locale-Short-Variant',
+    'X-Flutter-Locale-Short-Country',
+    'X-Flutter-Locale-Short-Language',
+    'X-Flutter-Locale-Short-Region',
+    )
 
 
 AUTHENTICATION_BACKENDS = [
