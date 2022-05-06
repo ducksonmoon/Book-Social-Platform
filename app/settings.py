@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'https://nebig.iran.liara.run',
-    'https://nebigapp.iran.liara.run'
+    'https://nebigapp.iran.liara.run',
     'https://api.nebigapp.com',
     'https://nebigapp.com',
     'https://nebigapp.ir',
@@ -97,7 +97,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
     'https://nebig.iran.liara.run',
-    'https://nebigapp.iran.liara.run'
+    'https://nebigapp.iran.liara.run',
     'https://api.nebigapp.com',
     'https://nebigapp.com',
     'https://nebigapp.ir',
