@@ -25,14 +25,19 @@ SECRET_KEY = 'oops-i-did-it-again.'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'https://nebig.iran.liara.run',
+    'https://nebigapp.iran.liara.run'
+    'https://api.nebigapp.com',
+    'https://nebigapp.com',
+    'https://nebigapp.ir',
+    'https://pwa.nebigapp.com',
+    'https://pwa.nebigapp.ir',
+    'http://localhost',
+    'http://localhost:3000',
+    'http://localhost:8000',
+]
 
-"""
-    'https://nebig.iran.liara.run/',
-    'https://api.nebigapp.com/',
-    'localhost',
-    '127.0.0.1',
-"""
 
 # Application definition
 INSTALLED_APPS = [
@@ -92,9 +97,12 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
     'https://nebig.iran.liara.run',
+    'https://nebigapp.iran.liara.run'
     'https://api.nebigapp.com',
     'https://nebigapp.com',
     'https://nebigapp.ir',
+    'https://pwa.nebigapp.com',
+    'https://pwa.nebigapp.ir',
     'http://localhost',
     'http://localhost:3000',
     'http://localhost:8000',
