@@ -25,6 +25,8 @@ SECRET_KEY = 'oops-i-did-it-again.'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 SECURE_SSL_REDIRECT = True
+APPEND_SLASH = True
+
 
 ALLOWED_HOSTS = [
     'https://nebig.iran.liara.run',
@@ -83,40 +85,19 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Cors:
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
+
 ]
 
 # Cors Headers
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = (
-    'https://nebig.iran.liara.run',
-    'https://nebigapp.iran.liara.run',
-    'https://api.nebigapp.com',
-    'https://nebigapp.com',
-    'https://nebigapp.ir',
-    'https://pwa.nebigapp.com',
-    'https://pwa.nebigapp.ir',
-    'http://localhost',
-    'http://localhost:3000',
-    'http://localhost:8000',
-)
 
-CORS_ALLOW_METHODS = [
-  "DELETE",
-  "GET",
-  "OPTIONS",
-  "PATCH",
-  "POST",
-  "PUT",
-]
 
 AUTHENTICATION_BACKENDS = [
     # Used for default signin such as loggin into admin panel.
