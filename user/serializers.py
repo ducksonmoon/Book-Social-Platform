@@ -9,6 +9,10 @@ from rest_framework.exceptions import ValidationError
 from core.models import UserProfile, ConfirmCode, Invitation
 from utils.validators import validate_username, validate_email, validate_image_extension
 
+from io import BytesIO
+import base64
+
+from django.core.files.base import ContentFile
 
 class UserSerializer(serializers.ModelSerializer):
     """ Serializer for the users object """
@@ -133,6 +137,8 @@ class ManageUserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', required=False)
     email = serializers.CharField(source='user.email', required=False)
     phone_number = serializers.CharField(source='user.userprofile.phone_number', required=False)
+    # Base64 image
+    image_binary = serializers.CharField(required=False)
     class Meta:
         model = UserProfile
         fields = (
@@ -141,7 +147,8 @@ class ManageUserSerializer(serializers.ModelSerializer):
             'username', 
             'email', 
             'birth_date', 
-            'avatar', 
+            'avatar',
+            'image_binary', 
             'bio',
             'phone_number',
             'social_media_link'
@@ -206,6 +213,21 @@ class ManageUserSerializer(serializers.ModelSerializer):
         if 'bio' in validated_data:
             instance.bio = validated_data.get('bio')
         user_data = validated_data.pop('user', None)
+        binary_image = validated_data.pop('image_binary', None)
+        if binary_image:
+            def decode_base64(data):
+                """Decode base64 image"""
+                missing_padding = len(data) % 4
+                if missing_padding != 0:
+                    data += b'='* (4 - missing_padding)
+                return base64.b64decode(data)
+            image_binary = decode_base64(binary_image)
+            instance.avatar.save(
+                'avatar.jpg',
+                ContentFile(image_binary),
+                save=False
+            )
+
         if validated_data.get('avatar') != None:
             instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.social_media_link = validated_data.get('social_media_link', instance.social_media_link)
