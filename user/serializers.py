@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.models import User
-from numpy import require
+from PIL import Image
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from core.models import UserProfile, ConfirmCode, Invitation
@@ -222,6 +222,12 @@ class ManageUserSerializer(serializers.ModelSerializer):
                     data += b'='* (4 - missing_padding)
                 return base64.b64decode(data)
             image_binary = decode_base64(binary_image)
+            # Convert to RGB
+            image = Image.open(BytesIO(image_binary))
+            image = image.convert('RGB')
+            image_binary = BytesIO()
+            image.save(image_binary, format='JPEG')
+            image_binary = image_binary.getvalue()
             instance.avatar.save(
                 'avatar.jpg',
                 ContentFile(image_binary),
