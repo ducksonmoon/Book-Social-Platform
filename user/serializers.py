@@ -225,7 +225,7 @@ class ManageUserSerializer(serializers.ModelSerializer):
             instance.avatar.save(
                 'avatar.jpg',
                 ContentFile(image_binary),
-                save=False
+                save=True
             )
 
         if validated_data.get('avatar') != None:
