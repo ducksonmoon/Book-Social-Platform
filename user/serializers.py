@@ -226,7 +226,7 @@ class ManageUserSerializer(serializers.ModelSerializer):
             image = Image.open(BytesIO(image_binary))
             image = image.convert('RGB')
             image_binary = BytesIO()
-            image.save(image_binary, format='JPEG')
+            image.save(image_binary, format='PNG')
             image_binary = image_binary.getvalue()
             instance.avatar.save(
                 'avatar.jpg',
