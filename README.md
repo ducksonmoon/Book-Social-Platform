@@ -1,8 +1,13 @@
 # Some-Book-API
+Not clean at all
 Hahaha
-It's just another API for Nebig book.
+It's just another API.
+
 
 > V1
+### Note
+This project has some areas that could be improved. Please feel free to read it and ignore any mistakes or workarounds. I plan to improve it in the future when I have more time.
+
 
 ## Commands
 This handy guide will help you run projects and read documents:
