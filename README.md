@@ -1,5 +1,4 @@
 # Some-Book-API
-Not clean at all
 Hahaha
 It's just another API.
 
