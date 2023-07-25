@@ -6,7 +6,7 @@ beautifulsoup4==4.11.1
 billiard==3.6.4.0
 bs4==0.0.1
 celery==5.2.6
-certifi==2021.5.30
+certifi==2023.7.22
 cffi==1.15.0
 charset-normalizer==2.0.4
 click==8.1.2
